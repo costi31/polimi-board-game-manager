@@ -7,7 +7,7 @@ import org.glassfish.jersey.test.JerseyTest;
 
 import org.junit.Test;
 
-import com.herokuapp.MyResource;
+import com.herokuapp.polimiboardgamemanager.resources.MyResource;
 
 import static org.junit.Assert.assertEquals;
 
