@@ -16,10 +16,7 @@ import javax.xml.bind.JAXBElement;
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 
-/**
- * Root resource (exposed at "myresource" path)
- */
-@Path("BoardGame")
+
 public class BoardGameResource {
     @Context
     UriInfo uriInfo;
