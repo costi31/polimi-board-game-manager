@@ -22,8 +22,8 @@ public class BoardGameResource {
     UriInfo uriInfo;
     @Context
     Request request;
-    String id;
-    public BoardGameResource(UriInfo uriInfo, Request request, String id) {
+    int id;
+    public BoardGameResource(UriInfo uriInfo, Request request, int id) {
         this.uriInfo = uriInfo;
         this.request = request;
         this.id = id;
@@ -33,26 +33,26 @@ public class BoardGameResource {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public BoardGame getBoardGame() {
-        BoardGame todo = BoardGameDao.instance.getModel().get(id);
-        if(todo==null)
-                throw new RuntimeException("Get: Todo with " + id +  " not found");
-        return todo;
+        BoardGame board = BoardGameDao.instance.getModel().get(id);
+        if(board==null)
+                throw new RuntimeException("Get: BoardGame with " + id +  " not found");
+        return board;
     }
 
     // for the browser
     @GET
     @Produces(MediaType.TEXT_XML)
     public BoardGame getTodoHTML() {
-        BoardGame todo = BoardGameDao.instance.getModel().get(id);
-        if(todo==null)
-                throw new RuntimeException("Get: Todo with " + id +  " not found");
-        return todo;
+        BoardGame board = BoardGameDao.instance.getModel().get(id);
+        if(board==null)
+                throw new RuntimeException("Get: BoardGame with " + id +  " not found");
+        return board;
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
-    public Response putTodo(JAXBElement<BoardGame> todo) {
-        BoardGame c = todo.getValue();
+    public Response putTodo(JAXBElement<BoardGame> board) {
+        BoardGame c = board.getValue();
         return putAndGetResponse(c);
     }
 
@@ -60,17 +60,17 @@ public class BoardGameResource {
     public void deleteTodo() {
         BoardGame c = BoardGameDao.instance.getModel().remove(id);
         if(c==null)
-            throw new RuntimeException("Delete: Todo with " + id +  " not found");
+            throw new RuntimeException("Delete: BoardGame with " + id +  " not found");
     }
 
-    private Response putAndGetResponse(BoardGame todo) {
+    private Response putAndGetResponse(BoardGame board) {
         Response res;
-        if(BoardGameDao.instance.getModel().containsKey(todo.getId())) {
+        if(BoardGameDao.instance.getModel().containsKey(board.getId())) {
                 res = Response.noContent().build();
         } else {
                 res = Response.created(uriInfo.getAbsolutePath()).build();
         }
-        BoardGameDao.instance.getModel().put(todo.getId(), todo);
+        BoardGameDao.instance.getModel().put(board.getId(), board);
         return res;
     }
 }

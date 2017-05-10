@@ -8,20 +8,19 @@ import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 public enum BoardGameDao {
     instance;
 
-    private Map<String, BoardGame> contentProvider = new HashMap<String, BoardGame>();
+    private Map<Integer, BoardGame> contentProvider = new HashMap<Integer, BoardGame>();
 
     private BoardGameDao() {
 
-        BoardGame todo = new BoardGame("1", "Learn REST");
-        todo.setDescription("Read http://www.vogella.com/tutorials/REST/article.html");
-        contentProvider.put("1", todo);
-        todo = new BoardGame("2", "Do something");
-        todo.setDescription("Read complete http://www.vogella.com");
-        contentProvider.put("2", todo);
+        BoardGame board = new BoardGame(1, "game1", new String[]{"A", "B"}, "cover.jpg");
+        contentProvider.put(1, board);
+        //board = new BoardGame("2", "Do something");
+        //board.setDescription("Read complete http://www.vogella.com");
+        //contentProvider.put("2", board);
 
     }
     
-    public Map<String, BoardGame> getModel(){
+    public Map<Integer, BoardGame> getModel(){
             return contentProvider;
     }
 

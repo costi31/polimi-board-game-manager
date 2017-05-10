@@ -24,64 +24,62 @@ import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 @Path("/boardgames")
 public class BoardGamesResource {
 
-        // Allows to insert contextual objects into the class,
-        // e.g. ServletContext, Request, Response, UriInfo
-        @Context
-        UriInfo uriInfo;
-        @Context
-        Request request;
+    // Allows to insert contextual objects into the class,
+    // e.g. ServletContext, Request, Response, UriInfo
+    @Context
+    UriInfo uriInfo;
+    @Context
+    Request request;
 
-        // Return the list of todos to the user in the browser
-        @GET
-        @Produces(MediaType.TEXT_XML)
-        public List<BoardGame> getTodosBrowser() {
-                List<BoardGame> todos = new ArrayList<BoardGame>();
-                todos.addAll(BoardGameDao.instance.getModel().values());
-                return todos;
-        }
+    // Return the list of todos to the user in the browser
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    public List<BoardGame> getTodosBrowser() {
+            List<BoardGame> boards = new ArrayList<BoardGame>();
+            boards.addAll(BoardGameDao.instance.getModel().values());
+            return boards;
+    }
 
-        // Return the list of todos for applications
-        @GET
-        @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-        public List<BoardGame> getTodos() {
-                List<BoardGame> todos = new ArrayList<BoardGame>();
-                todos.addAll(BoardGameDao.instance.getModel().values());
-                return todos;
-        }
+    // Return the list of todos for applications
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public List<BoardGame> getTodos() {
+            List<BoardGame> todos = new ArrayList<BoardGame>();
+            todos.addAll(BoardGameDao.instance.getModel().values());
+            return todos;
+    }
 
-        // retuns the number of todos
-        // Use http://localhost:8080/com.vogella.jersey.todo/rest/todos/count
-        // to get the total number of records
-        @GET
-        @Path("count")
-        @Produces(MediaType.TEXT_PLAIN)
-        public String getCount() {
-                int count = BoardGameDao.instance.getModel().size();
-                return String.valueOf(count);
-        }
+    // retuns the number of boards
+    // Use http://localhost:8080/com.vogella.jersey.todo/rest/todos/count
+    // to get the total number of records
+    @GET
+    @Path("count")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getCount() {
+            int count = BoardGameDao.instance.getModel().size();
+            return String.valueOf(count);
+    }
 
-        @POST
-        @Produces(MediaType.TEXT_HTML)
-        @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-        public void newTodo(@FormParam("id") String id,
-                        @FormParam("summary") String summary,
-                        @FormParam("description") String description,
+    @POST
+    @Produces(MediaType.TEXT_HTML)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public void newTodo(@FormParam("id") int id,
+                        @FormParam("name") String name,
+                        @FormParam("designers") String designers_string,
+                        @FormParam("cover") String cover,
                         @Context HttpServletResponse servletResponse) throws IOException {
-            BoardGame todo = new BoardGame(id, summary);
-                if (description != null) {
-                        todo.setDescription(description);
-                }
-                BoardGameDao.instance.getModel().put(id, todo);
-
-                servletResponse.sendRedirect("../create_todo.html");
-        }
+        String[] designers = designers_string.split(",");
+        BoardGame board = new BoardGame(id, name, designers, cover);
+        BoardGameDao.instance.getModel().put(id, board);
+        servletResponse.sendRedirect("../create_todo.html");
+    }
 
     // Defines that the next path parameter after todos is
     // treated as a parameter and passed to the TodoResources
     // Allows to type http://localhost:8080/com.vogella.jersey.todo/rest/todos/1
     // 1 will be treaded as parameter todo and passed to TodoResource
     @Path("{todo}")
-    public BoardGameResource getTodo(@PathParam("todo") String id) {
+    public BoardGameResource getTodo(@PathParam("todo") int id) {
         return new BoardGameResource(uriInfo, request, id);
     }
 
