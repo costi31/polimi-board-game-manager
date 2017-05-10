@@ -33,7 +33,7 @@ public class BoardGamesResource {
 
     // Return the list of todos to the user in the browser
     @GET
-    @Produces(MediaType.TEXT_XML)
+    @Produces(MediaType.TEXT_HTML)
     public List<BoardGame> getTodosBrowser() {
             List<BoardGame> boards = new ArrayList<BoardGame>();
             boards.addAll(BoardGameDao.instance.getModel().values());
