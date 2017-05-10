@@ -4,7 +4,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -45,7 +44,7 @@ public class BoardGameResource {
     public BoardGame getTodoHTML() {
         BoardGame board = BoardGameDao.instance.getModel().get(id);
         if(board==null)
-                throw new RuntimeException("Get: BoardGame with " + id +  " not found");
+            throw new RuntimeException("Get: BoardGame with " + id +  " not found");
         return board;
     }
 
