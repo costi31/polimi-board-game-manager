@@ -1,4 +1,4 @@
-package com.herokuapp.polimiboardgamemanager.resources;
+package com.herokuapp;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

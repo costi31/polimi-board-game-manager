@@ -1,4 +1,4 @@
-package com.herokuapp.polimiboardgamemanager;
+package com.herokuapp;
 
 import javax.ws.rs.core.Application;
 
@@ -7,7 +7,7 @@ import org.glassfish.jersey.test.JerseyTest;
 
 import org.junit.Test;
 
-import com.herokuapp.polimiboardgamemanager.resources.MyResource;
+import com.herokuapp.MyResource;
 
 import static org.junit.Assert.assertEquals;
 
