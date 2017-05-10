@@ -8,14 +8,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class BoardGame {
     private int id;
     private String name;
-    private String[] designers;
+    private String designers;
     private String cover;
 
     public BoardGame(){
 
     }
        
-    public BoardGame(int id, String name, String[] designers, String cover) {
+    public BoardGame(int id, String name, String designers, String cover) {
         this.id = id;
         this.setName(name);
         this.setDesigners(designers);
@@ -38,11 +38,11 @@ public class BoardGame {
         this.name = name;
     }
 
-    public String[] getDesigners() {
+    public String getDesigners() {
         return designers;
     }
 
-    public void setDesigners(String[] designers) {
+    public void setDesigners(String designers) {
         this.designers = designers;
     }
 

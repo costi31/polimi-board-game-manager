@@ -12,7 +12,7 @@ public enum BoardGameDao {
 
     private BoardGameDao() {
 
-        BoardGame board = new BoardGame(1, "game1", new String[]{"A", "B"}, "cover.jpg");
+        BoardGame board = new BoardGame(1, "game1", "a,b", "cover.jpg");
         contentProvider.put(1, board);
         //board = new BoardGame("2", "Do something");
         //board.setDescription("Read complete http://www.vogella.com");

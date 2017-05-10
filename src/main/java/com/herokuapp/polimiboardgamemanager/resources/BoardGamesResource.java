@@ -65,10 +65,9 @@ public class BoardGamesResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void newTodo(@FormParam("id") int id,
                         @FormParam("name") String name,
-                        @FormParam("designers") String designers_string,
+                        @FormParam("designers") String designers,
                         @FormParam("cover") String cover,
                         @Context HttpServletResponse servletResponse) throws IOException {
-        String[] designers = designers_string.split(",");
         BoardGame board = new BoardGame(id, name, designers, cover);
         BoardGameDao.instance.getModel().put(id, board);
         servletResponse.sendRedirect("../create_todo.html");
