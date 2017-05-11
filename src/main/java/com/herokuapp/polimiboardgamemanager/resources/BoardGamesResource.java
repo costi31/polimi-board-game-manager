@@ -69,8 +69,7 @@ public class BoardGamesResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void newTodo(@FormParam("name") String name,
                         @FormParam("designers") String designers,
-                        @FormParam("cover") String cover,
-                        @Context HttpServletResponse servletResponse) throws IOException {
+                        @FormParam("cover") String covere) throws IOException {
         
         if (em == null) {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.herokuapp.polimiboardgamemanager");
@@ -83,7 +82,7 @@ public class BoardGamesResource {
         em.getTransaction().commit();
         
         BoardGameDao.instance.getModel().put(board.getId(), board);
-        servletResponse.sendRedirect("../create_boardgame.html");
+        //servletResponse.sendRedirect("../create_boardgame.html");
     }
     
     @POST
