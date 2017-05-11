@@ -67,9 +67,9 @@ public class BoardGamesResource {
     @POST
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void newTodo(@FormParam("name") String name,
-                        @FormParam("designers") String designers,
-                        @FormParam("cover") String covere) throws IOException {
+    public void newBoardGameForm(@FormParam("name") String name,
+                                 @FormParam("designers") String designers,
+                                 @FormParam("cover") String cover) throws IOException {
         
         if (em == null) {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.herokuapp.polimiboardgamemanager");
@@ -77,7 +77,7 @@ public class BoardGamesResource {
         }
  
         em.getTransaction().begin();
-        BoardGame board = new BoardGame ("boardgame1", "pinco,pallo", "cover1.jpg");
+        BoardGame board = new BoardGame (name, designers, cover);
         em.persist(board);
         em.getTransaction().commit();
         
@@ -88,7 +88,7 @@ public class BoardGamesResource {
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public void newTodoApp(BoardGame b,
+    public void newBoardGameJson(BoardGame board,
                         @Context HttpServletResponse servletResponse) throws IOException {
         
         if (em == null) {
@@ -98,7 +98,6 @@ public class BoardGamesResource {
         }
  
         em.getTransaction().begin();
-        BoardGame board = new BoardGame (b.getName(), b.getDesigners(), b.getCover());
         em.persist(board);
         em.getTransaction().commit();
         
