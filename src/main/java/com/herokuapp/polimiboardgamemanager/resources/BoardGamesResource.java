@@ -78,7 +78,7 @@ public class BoardGamesResource {
         }
  
         em.getTransaction().begin();
-        BoardGame board = new BoardGame (name, designers, cover);
+        BoardGame board = new BoardGame ("boardgame1", "pinco,pallo", "cover1.jpg");
         em.persist(board);
         em.getTransaction().commit();
         
