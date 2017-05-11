@@ -106,8 +106,8 @@ public class BoardGamesResource {
     }
     
 
-    @Path("{board}")
-    public BoardGameResource getTodo(@PathParam("board") int id) {
+    @Path("{board_id}")
+    public BoardGameResource getBoard(@PathParam("board_id") Long id) {
         return new BoardGameResource(uriInfo, request, id);
     }
 

@@ -1,5 +1,8 @@
 package com.herokuapp.polimiboardgamemanager.resources;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -21,8 +24,8 @@ public class BoardGameResource {
     UriInfo uriInfo;
     @Context
     Request request;
-    int id;
-    public BoardGameResource(UriInfo uriInfo, Request request, int id) {
+    Long id;
+    public BoardGameResource(UriInfo uriInfo, Request request, Long id) {
         this.uriInfo = uriInfo;
         this.request = request;
         this.id = id;
@@ -32,9 +35,22 @@ public class BoardGameResource {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public BoardGame getBoardGame() {
-        BoardGame board = BoardGameDao.instance.getModel().get(id);
+        /*BoardGame board = BoardGameDao.instance.getModel().get(id);
         if(board==null)
-                throw new RuntimeException("Get: BoardGame with " + id +  " not found");
+                throw new RuntimeException("Get: BoardGame with " + id +  " not found");*/
+        
+        EntityManagerFactory emf = Persistence
+                .createEntityManagerFactory("BoardGameManagerPU");
+        EntityManager em = emf.createEntityManager();
+        
+        BoardGame board = null;
+        
+        try {
+            board = em.find(BoardGame.class, id);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Get: BoardGame with " + id +  " not found");
+        }
+ 
         return board;
     }
 
