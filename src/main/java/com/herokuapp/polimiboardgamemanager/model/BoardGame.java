@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class BoardGame {
     
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id;
+    private int id;
     
     @Column(name = "name")
     private String name;
@@ -35,8 +35,12 @@ public class BoardGame {
         this.setCover(cover);
     }
     
-    public Long getId() {
+    public int getId() {
         return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

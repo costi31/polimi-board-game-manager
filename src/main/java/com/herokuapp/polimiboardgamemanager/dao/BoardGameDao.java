@@ -8,7 +8,7 @@ import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 public enum BoardGameDao {
     instance;
 
-    private Map<Long, BoardGame> contentProvider = new HashMap<Long, BoardGame>();
+    private Map<Integer, BoardGame> contentProvider = new HashMap<Integer, BoardGame>();
 
     private BoardGameDao() {
 
@@ -20,7 +20,7 @@ public enum BoardGameDao {
 
     }
     
-    public Map<Long, BoardGame> getModel(){
+    public Map<Integer, BoardGame> getModel(){
             return contentProvider;
     }
 

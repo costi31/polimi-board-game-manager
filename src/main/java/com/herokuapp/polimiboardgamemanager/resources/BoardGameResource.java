@@ -24,8 +24,8 @@ public class BoardGameResource {
     UriInfo uriInfo;
     @Context
     Request request;
-    Long id;
-    public BoardGameResource(UriInfo uriInfo, Request request, Long id) {
+    int id;
+    public BoardGameResource(UriInfo uriInfo, Request request, int id) {
         this.uriInfo = uriInfo;
         this.request = request;
         this.id = id;
