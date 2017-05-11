@@ -1,6 +1,7 @@
 package com.herokuapp.polimiboardgamemanager.resources;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
@@ -30,6 +34,8 @@ public class BoardGamesResource {
     UriInfo uriInfo;
     @Context
     Request request;
+    
+    private EntityManager em = null;
 
     // Return the list of board games to the user in the browser
     @GET
@@ -61,15 +67,46 @@ public class BoardGamesResource {
     @POST
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void newTodo(@FormParam("id") int id,
-                        @FormParam("name") String name,
+    public void newTodo(@FormParam("name") String name,
                         @FormParam("designers") String designers,
                         @FormParam("cover") String cover,
                         @Context HttpServletResponse servletResponse) throws IOException {
-        BoardGame board = new BoardGame(id, name, designers, cover);
-        BoardGameDao.instance.getModel().put(id, board);
-        //servletResponse.sendRedirect("../create_todo.html");
+        
+        if (em == null) {
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.herokuapp.polimiboardgamemanager");
+            em = emf.createEntityManager();
+        }
+ 
+        em.getTransaction().begin();
+        BoardGame board = new BoardGame (name, designers, cover);
+        em.persist(board);
+        em.getTransaction().commit();
+        
+        BoardGameDao.instance.getModel().put(board.getId(), board);
+        servletResponse.sendRedirect("../create_boardgame.html");
     }
+    
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void newTodoApp(BoardGame b,
+                        @Context HttpServletResponse servletResponse) throws IOException {
+        
+        if (em == null) {
+            EntityManagerFactory emf = Persistence
+                    .createEntityManagerFactory("BoardGameManagerPU");
+            em = emf.createEntityManager();
+        }
+ 
+        em.getTransaction().begin();
+        BoardGame board = new BoardGame (b.getName(), b.getDesigners(), b.getCover());
+        em.persist(board);
+        em.getTransaction().commit();
+        
+        BoardGameDao.instance.getModel().put(board.getId(), board);
+        //servletResponse.sendRedirect("../create_boardgame.html");
+    }
+    
 
     @Path("{board}")
     public BoardGameResource getTodo(@PathParam("board") int id) {

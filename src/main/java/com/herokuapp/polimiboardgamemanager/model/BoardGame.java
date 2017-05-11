@@ -1,31 +1,42 @@
 package com.herokuapp.polimiboardgamemanager.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+ 
 @XmlRootElement
+@Entity
+@Table(name = "boardgame")
 public class BoardGame {
-    private int id;
+    
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "name")
     private String name;
+    
+    @Column(name = "designers")
     private String designers;
+    
+    @Column(name = "cover")
     private String cover;
 
     public BoardGame(){
 
     }
        
-    public BoardGame(int id, String name, String designers, String cover) {
-        this.id = id;
+    public BoardGame(String name, String designers, String cover) {
         this.setName(name);
         this.setDesigners(designers);
         this.setCover(cover);
     }
     
-    public int getId() {
+    public Long getId() {
         return id;
-    }
-    
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

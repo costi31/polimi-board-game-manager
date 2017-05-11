@@ -69,7 +69,7 @@ public class BoardGameResource {
         } else {
                 res = Response.created(uriInfo.getAbsolutePath()).build();
         }
-        BoardGameDao.instance.getModel().put(board.getId(), board);
+        //BoardGameDao.instance.getModel().put(board.getId(), board);
         return res;
     }
 }
