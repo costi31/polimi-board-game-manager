@@ -90,7 +90,7 @@ public class BoardGameDao {
      * @return number of existing board games
      */
     public long getBoardGamesCount() {
-        return 0;
+        return (long) em.createQuery("SELECT count(id) FROM BoardGame board").getSingleResult();
     }
     
     /**
