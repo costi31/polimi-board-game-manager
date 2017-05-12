@@ -24,8 +24,8 @@ public class BoardGameResource {
     UriInfo uriInfo;
     @Context
     Request request;
-    int id;
-    public BoardGameResource(UriInfo uriInfo, Request request, int id) {
+    long id;
+    public BoardGameResource(UriInfo uriInfo, Request request, long id) {
         this.uriInfo = uriInfo;
         this.request = request;
         this.id = id;
@@ -35,33 +35,14 @@ public class BoardGameResource {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public BoardGame getBoardGame() {
-        /*BoardGame board = BoardGameDao.instance.getModel().get(id);
-        if(board==null)
-                throw new RuntimeException("Get: BoardGame with " + id +  " not found");*/
-        
-        EntityManagerFactory emf = Persistence
-                .createEntityManagerFactory("BoardGameManagerPU");
-        EntityManager em = emf.createEntityManager();
-        
-        BoardGame board = null;
-        
-        try {
-            board = em.find(BoardGame.class, id);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Get: BoardGame with " + id +  " not found");
-        }
- 
-        return board;
+        return BoardGameDao.getInstance().getBoardGame(id);
     }
 
     // for the browser
     @GET
     @Produces(MediaType.TEXT_XML)
-    public BoardGame getTodoHTML() {
-        BoardGame board = BoardGameDao.instance.getModel().get(id);
-        if(board==null)
-            throw new RuntimeException("Get: BoardGame with " + id +  " not found");
-        return board;
+    public BoardGame getBoardGameHTML() {
+        return BoardGameDao.getInstance().getBoardGame(id);
     }
 
     @PUT
@@ -72,20 +53,19 @@ public class BoardGameResource {
     }
 
     @DELETE
-    public void deleteTodo() {
-        BoardGame c = BoardGameDao.instance.getModel().remove(id);
-        if(c==null)
-            throw new RuntimeException("Delete: BoardGame with " + id +  " not found");
+    public void deleteBoardGame() {
+        BoardGameDao.getInstance().deleteBoardGame(id);
     }
 
     private Response putAndGetResponse(BoardGame board) {
         Response res;
-        if(BoardGameDao.instance.getModel().containsKey(board.getId())) {
+        if(BoardGameDao.getInstance().getBoardGame(board.getId()) != null) {
                 res = Response.noContent().build();
         } else {
                 res = Response.created(uriInfo.getAbsolutePath()).build();
+                BoardGameDao.getInstance().insertBoardGame(board.getName(), board.getDesigners(), board.getCover());
         }
-        //BoardGameDao.instance.getModel().put(board.getId(), board);
+
         return res;
     }
 }
