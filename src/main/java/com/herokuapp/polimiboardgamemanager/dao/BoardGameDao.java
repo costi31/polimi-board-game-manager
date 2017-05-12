@@ -98,7 +98,7 @@ public class BoardGameDao {
      * @return list of existing BoardGame(s)
      */
     public List<BoardGame> getAllBoardGames() {
-        return null;
+        return em.createQuery("SELECT board FROM BoardGame board").getResultList();
     }
 
 }
