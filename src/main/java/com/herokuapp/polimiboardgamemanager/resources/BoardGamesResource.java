@@ -1,8 +1,6 @@
 package com.herokuapp.polimiboardgamemanager.resources;
 
 import java.io.IOException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,9 +15,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
@@ -35,32 +30,26 @@ public class BoardGamesResource {
     @Context
     Request request;
 
-    // Return the list of board games to the user in the browser
-    @GET
-    @Produces(MediaType.TEXT_XML)
-    public List<BoardGame> getBoardsBrowser() {
-//        List<BoardGame> boards = new ArrayList<BoardGame>();
-//        boards.addAll(BoardGameDao_old.instance.getModel().values());
-//        return boards;
-        return BoardGameDao.getInstance().getAllBoardGames();
-    }
-
     // Return the list of board games for applications
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public List<BoardGame> getBoards() {
-//        List<BoardGame> boards = new ArrayList<BoardGame>();
-//        boards.addAll(BoardGameDao_old.instance.getModel().values());
-//        return boards;
         return BoardGameDao.getInstance().getAllBoardGames();
     }
+    
+    // Return the list of board games to the user in the browser
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    public List<BoardGame> getBoardsBrowser() {
+        return BoardGameDao.getInstance().getAllBoardGames();
+    }    
 
     // returns the number of board games
     @GET
     @Path("count")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
-        return String.valueOf(BoardGameDao.getInstance().getBoardGamesCount());
+    @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public long getCount() {
+        return BoardGameDao.getInstance().getBoardGamesCount();
     }
 
     @POST

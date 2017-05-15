@@ -31,16 +31,10 @@ public class BoardGameResource {
 
     //Application integration
     @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public BoardGame getBoardGameXml() {
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public BoardGame getBoardGame() {
         return BoardGameDao.getInstance().getBoardGame(id);
     }
-    
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public BoardGame getBoardGameJson() {
-        return BoardGameDao.getInstance().getBoardGame(id);
-    }    
 
     // for the browser
     @GET
