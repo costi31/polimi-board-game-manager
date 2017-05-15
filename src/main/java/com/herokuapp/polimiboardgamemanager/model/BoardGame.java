@@ -1,8 +1,12 @@
 package com.herokuapp.polimiboardgamemanager.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,11 +14,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.UriInfo;
  
 @XmlRootElement
 @Entity
 @Table(name = "boardgame")
 public class BoardGame implements Serializable {
+
+    @Transient
+    private static final long serialVersionUID = 3879736814114073027L;
+
+    @Transient
+    private static final String BASE_URL = "https://polimi-board-game-manager.herokuapp.com/boardgames/"; 
     
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -68,6 +82,17 @@ public class BoardGame implements Serializable {
 
     public void setCover(String cover) {
         this.cover = cover;
+    }
+    
+    @XmlElement(name = "link")
+    @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
+    public List<Link> getLinks()
+    {
+        List<Link> links = new ArrayList<Link>();
+        links.add(Link.fromUri(BASE_URL+String.valueOf(id)).rel("self").build());
+        links.add(Link.fromUri(BASE_URL).rel("parent").build());
+        
+        return links;
     }
 
 }

@@ -1,8 +1,5 @@
 package com.herokuapp.polimiboardgamemanager.resources;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -25,6 +22,7 @@ public class BoardGameResource {
     @Context
     Request request;
     long id;
+    
     public BoardGameResource(UriInfo uriInfo, Request request, long id) {
         this.uriInfo = uriInfo;
         this.request = request;
@@ -68,4 +66,5 @@ public class BoardGameResource {
 
         return res;
     }
+
 }
