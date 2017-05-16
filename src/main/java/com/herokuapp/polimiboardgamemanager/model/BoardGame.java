@@ -44,9 +44,10 @@ public class BoardGame implements Serializable {
     }
        
     public BoardGame(String name, String designers, String cover) {
-        this.setName(name);
-        this.setDesigners(designers);
-        this.setCover(cover);
+        super();
+        this.name = name;
+        this.designers = designers;
+        this.cover = cover;
     }
     
     public long getId() {
