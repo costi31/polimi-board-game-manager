@@ -1,9 +1,5 @@
 package com.herokuapp.polimiboardgamemanager.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  
 @XmlRootElement
 @Entity

@@ -17,7 +17,7 @@ public class BoardGameDao {
     
     private static BoardGameDao instance = null;
     
-    private EntityManagerFactory emf;
+    private EntityManagerFactory emfactory;
     private EntityManager em;
     
     /**
@@ -32,8 +32,7 @@ public class BoardGameDao {
     }
 
     private BoardGameDao() {
-        emf = Persistence.createEntityManagerFactory("BoardGameManagerPU");
-        em = emf.createEntityManager();
+        emfactory = Persistence.createEntityManagerFactory("BoardGameManagerPU");
     }
     
     /**
@@ -43,7 +42,10 @@ public class BoardGameDao {
      */
     public BoardGame getBoardGame(long id) {
         try {
-            return em.find(BoardGame.class, id);
+            em = emfactory.createEntityManager();
+            BoardGame board = em.find(BoardGame.class, id);
+            em.close();
+            return board;
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Get: BoardGame with " + id +  " not found");
         }
@@ -56,9 +58,11 @@ public class BoardGameDao {
     public void insertBoardGame(String name, String designers, String cover) {
         BoardGame board = new BoardGame(name, designers, cover);
         
+        em = emfactory.createEntityManager();
         em.getTransaction().begin();
         em.persist(board);
         em.getTransaction().commit();
+        em.close();
     }
     
     /**
@@ -90,7 +94,10 @@ public class BoardGameDao {
      * @return number of existing board games
      */
     public long getBoardGamesCount() {
-        return (long) em.createQuery("SELECT count(id) FROM BoardGame board").getSingleResult();
+        em = emfactory.createEntityManager();
+        long count = (long) em.createQuery("SELECT count(id) FROM BoardGame board").getSingleResult();
+        em.close();
+        return count;
     }
     
     /**
@@ -98,7 +105,10 @@ public class BoardGameDao {
      * @return list of existing BoardGame(s)
      */
     public List<BoardGame> getAllBoardGames() {
-        return em.createQuery("SELECT board FROM BoardGame board").getResultList();
+        em = emfactory.createEntityManager();
+        List<BoardGame> allBoards = (List<BoardGame>) em.createQuery("SELECT board FROM BoardGame board").getResultList();
+        em.close();
+        return allBoards;
     }
 
 }
