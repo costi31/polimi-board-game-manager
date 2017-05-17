@@ -55,9 +55,11 @@ public class User implements Serializable {
     @Column(name = "fullName")
     private String fullName;
     
+    @XmlTransient
     @Column(name = "username")
     private String username;
     
+    @XmlTransient
     @Column(name = "password")
     private String password;
     
@@ -119,7 +121,6 @@ public class User implements Serializable {
     /**
      * @return the login
      */
-    @XmlTransient
     public String getUsername() {
         return username;
     }
@@ -134,7 +135,6 @@ public class User implements Serializable {
     /**
      * @return the password
      */
-    @XmlTransient
     public String getPassword() {
         return password;
     }
@@ -149,7 +149,6 @@ public class User implements Serializable {
     /**
      * @return the powerUser
      */
-    @XmlTransient
     public boolean isPowerUser() {
         return powerUser;
     }
