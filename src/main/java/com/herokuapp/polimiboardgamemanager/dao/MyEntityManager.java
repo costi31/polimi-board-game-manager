@@ -1,4 +1,4 @@
-package com.herokuapp.polimiboardgamemanager.util;
+package com.herokuapp.polimiboardgamemanager.dao;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,6 +45,7 @@ public class MyEntityManager {
         
         
         emfactory = Persistence.createEntityManagerFactory("BoardGameManagerPU", configOverrides);
+        em = emfactory.createEntityManager();
     }
     
     /**
@@ -52,8 +53,18 @@ public class MyEntityManager {
      * @return the entity manager
      */
     public EntityManager getEm() {
-        em = emfactory.createEntityManager();
         return em;
+    }
+    
+    /**
+     * Persists a generic object in the entity manager, commits and flushes
+     * @param entity Object to persist in the entity manager
+     */
+    public void persistEntity(Object entity) {
+        em.getTransaction().begin();
+        em.persist(entity);
+        em.flush();
+        em.getTransaction().commit();
     }
 
 }

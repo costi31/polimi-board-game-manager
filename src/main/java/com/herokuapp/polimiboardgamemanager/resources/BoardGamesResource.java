@@ -69,7 +69,7 @@ public class BoardGamesResource {
     public void newBoardGameJson(BoardGame board,
                         @Context HttpServletResponse servletResponse) throws IOException {
         
-        BoardGameDao.getInstance().insertBoardGame(board.getName(), board.getDesigners(), board.getCover());
+        BoardGameDao.getInstance().insertBoardGame(board);
 
         //servletResponse.sendRedirect("../create_boardgame.html");
     }

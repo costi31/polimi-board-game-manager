@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -18,10 +19,11 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
 import com.herokuapp.polimiboardgamemanager.model.User;
+import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
 
 public class UserResourceTest extends JerseyTest {
     
-    private static final String TARGET = "https://polimi-board-game-manager.herokuapp.com/users";
+    private static final String TARGET = "/users";
 
     @Override
     protected Application configure() {
@@ -53,13 +55,14 @@ public class UserResourceTest extends JerseyTest {
     public void testCreateUser() {
         System.out.println("----------------------------------------------------------------");
         System.out.println("testCreateUser");
+        
         User user = new User("Bob Test", "bob", "bob", true);
         Response response = target(TARGET).request().post(Entity.entity(user, MediaType.APPLICATION_JSON));
         
-        System.out.print(response.toString());
-        
-        assertEquals(Response.Status.CREATED, response.getStatus());
-        System.out.println("user "+user.getId()+ " created");
+        URI location = response.getLocation();
+        System.out.print(location);
+
+        assertEquals(Response.Status.CREATED, Response.Status.fromStatusCode(response.getStatus()));
     }
     
 //    @Test

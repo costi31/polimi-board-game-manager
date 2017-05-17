@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import javax.persistence.*;
 import javax.ws.rs.core.Link;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -21,6 +23,7 @@ import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
  *
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 @Table(name = "user")
 @NamedQueries({

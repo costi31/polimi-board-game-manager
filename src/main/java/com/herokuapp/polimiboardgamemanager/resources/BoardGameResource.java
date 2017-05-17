@@ -61,7 +61,7 @@ public class BoardGameResource {
                 res = Response.noContent().build();
         } else {
                 res = Response.created(uriInfo.getAbsolutePath()).build();
-                BoardGameDao.getInstance().insertBoardGame(board.getName(), board.getDesigners(), board.getCover());
+                BoardGameDao.getInstance().insertBoardGame(board);
         }
 
         return res;

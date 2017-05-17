@@ -7,7 +7,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
-import com.herokuapp.polimiboardgamemanager.util.MyEntityManager;
 
 /**
  * Singleton DAO class to access and manage a board game
@@ -17,8 +16,6 @@ import com.herokuapp.polimiboardgamemanager.util.MyEntityManager;
 public class BoardGameDao {
     
     private static BoardGameDao instance = null;
-    
-    private EntityManager em;
     
     /**
      * Gets the instance of BoardGameDao
@@ -41,9 +38,7 @@ public class BoardGameDao {
      */
     public BoardGame getBoardGame(long id) {
         try {
-            em = MyEntityManager.getInstance().getEm();
-            BoardGame board = em.find(BoardGame.class, id);
-            em.close();
+            BoardGame board = MyEntityManager.getInstance().getEm().find(BoardGame.class, id);
             return board;
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Get: BoardGame with " + id +  " not found");
@@ -54,15 +49,14 @@ public class BoardGameDao {
      * Inserts a new board game
      * @param board BoardGame object to insert
      */
+    public void insertBoardGame(BoardGame board) {
+        MyEntityManager.getInstance().persistEntity(board);
+    }
+    
     public void insertBoardGame(String name, String designers, String cover) {
         BoardGame board = new BoardGame(name, designers, cover);
-        
-        em = MyEntityManager.getInstance().getEm();
-        em.getTransaction().begin();
-        em.persist(board);
-        em.getTransaction().commit();
-        em.close();
-    }
+        insertBoardGame(board);
+    }    
     
     /**
      * Updates a board game
@@ -93,9 +87,8 @@ public class BoardGameDao {
      * @return number of existing board games
      */
     public long getBoardGamesCount() {
-        em = MyEntityManager.getInstance().getEm();
+        EntityManager em = MyEntityManager.getInstance().getEm();
         long count = (long) em.createQuery("SELECT count(id) FROM BoardGame board").getSingleResult();
-        em.close();
         return count;
     }
     
@@ -104,9 +97,8 @@ public class BoardGameDao {
      * @return list of existing BoardGame(s)
      */
     public List<BoardGame> getAllBoardGames() {
-        em = MyEntityManager.getInstance().getEm();
+        EntityManager em = MyEntityManager.getInstance().getEm();
         List<BoardGame> allBoards = (List<BoardGame>) em.createQuery("SELECT board FROM BoardGame board").getResultList();
-        em.close();
         return allBoards;
     }
 
