@@ -11,6 +11,7 @@ import javax.persistence.TypedQuery;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.DatatypeConverter;
 
+import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.User;
 import com.herokuapp.polimiboardgamemanager.util.MyEntityManager;
 import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
@@ -19,10 +20,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 public class UserDao {
-    
-    private static final Key SIGNING_KEY = new SecretKeySpec(DatatypeConverter.parseBase64Binary(
-                                                             System.getenv("SIGNING_KEY")
-                                                             ), SignatureAlgorithm.HS512.getJcaName());
     
     private static UserDao instance = null;
     
@@ -40,6 +37,14 @@ public class UserDao {
     }
 
     private UserDao() {
+    }
+    
+    public void createUser(User user) {
+        em = MyEntityManager.getInstance().getEm();
+        em.getTransaction().begin();
+        em.persist(user);
+        em.getTransaction().commit();
+        em.close();
     }
     
     public List<User> findAllUsersNameOrd(boolean desc) {
@@ -70,14 +75,14 @@ public class UserDao {
         long oneMinuteInMillis=60000;
         Calendar date = Calendar.getInstance();
         long t = date.getTimeInMillis();
-        Date expirationDate = new Date(t + (10 * oneMinuteInMillis));
+        Date expirationDate = new Date(t + (60 * oneMinuteInMillis));
         
         String jwtToken = Jwts.builder()
                             .setSubject(username)
                             .setIssuer(uriInfo.getAbsolutePath().toString())
                             .setIssuedAt(new Date())
                             .setExpiration(expirationDate)
-                            .signWith(SignatureAlgorithm.HS512, SIGNING_KEY)
+                            .signWith(SignatureAlgorithm.HS512, AuthenticationFilter.SIGNING_KEY)
                             .compact();
         
         return jwtToken;

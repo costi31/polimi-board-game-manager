@@ -63,11 +63,11 @@ public class User implements Serializable {
 
     public User() {
     }
-
-    public User(String name, String login, String password, boolean powerUser) {
+    
+    public User(String fullName, String username, String password, boolean powerUser) {
         super();
-        this.fullName = name;
-        this.username = login;
+        this.fullName = fullName;
+        this.username = username;
         this.password = password;
         this.powerUser = powerUser;
     }    
@@ -109,8 +109,8 @@ public class User implements Serializable {
     /**
      * @param name the name to set
      */
-    public void setFullName(String name) {
-        this.fullName = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     /**

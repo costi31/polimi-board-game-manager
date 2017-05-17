@@ -42,6 +42,7 @@ public class UserResource {
     // ======================================    
 
     @POST
+    @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response authenticateUser(@FormParam("username") String username, 
@@ -61,6 +62,14 @@ public class UserResource {
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }      
+    }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    public Response create(User user) {
+        UserDao.getInstance().createUser(user);
+        return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(user.getId())).build()).build();
     }
     
     @GET
