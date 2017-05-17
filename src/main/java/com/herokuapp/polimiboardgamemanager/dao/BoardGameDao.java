@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
+import com.herokuapp.polimiboardgamemanager.util.MyEntityManager;
 
 /**
  * Singleton DAO class to access and manage a board game
@@ -17,7 +18,6 @@ public class BoardGameDao {
     
     private static BoardGameDao instance = null;
     
-    private EntityManagerFactory emfactory;
     private EntityManager em;
     
     /**
@@ -32,7 +32,6 @@ public class BoardGameDao {
     }
 
     private BoardGameDao() {
-        emfactory = Persistence.createEntityManagerFactory("BoardGameManagerPU");
     }
     
     /**
@@ -42,7 +41,7 @@ public class BoardGameDao {
      */
     public BoardGame getBoardGame(long id) {
         try {
-            em = emfactory.createEntityManager();
+            em = MyEntityManager.getInstance().getEm();
             BoardGame board = em.find(BoardGame.class, id);
             em.close();
             return board;
@@ -58,7 +57,7 @@ public class BoardGameDao {
     public void insertBoardGame(String name, String designers, String cover) {
         BoardGame board = new BoardGame(name, designers, cover);
         
-        em = emfactory.createEntityManager();
+        em = MyEntityManager.getInstance().getEm();
         em.getTransaction().begin();
         em.persist(board);
         em.getTransaction().commit();
@@ -94,7 +93,7 @@ public class BoardGameDao {
      * @return number of existing board games
      */
     public long getBoardGamesCount() {
-        em = emfactory.createEntityManager();
+        em = MyEntityManager.getInstance().getEm();
         long count = (long) em.createQuery("SELECT count(id) FROM BoardGame board").getSingleResult();
         em.close();
         return count;
@@ -105,7 +104,7 @@ public class BoardGameDao {
      * @return list of existing BoardGame(s)
      */
     public List<BoardGame> getAllBoardGames() {
-        em = emfactory.createEntityManager();
+        em = MyEntityManager.getInstance().getEm();
         List<BoardGame> allBoards = (List<BoardGame>) em.createQuery("SELECT board FROM BoardGame board").getResultList();
         em.close();
         return allBoards;

@@ -8,10 +8,10 @@
     <persistence-unit name="BoardGameManagerPU">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <properties>
-            <property name="hibernate.connection.url" value="jdbc:mysql://eu-cdbr-west-01.cleardb.com/heroku_551ca55b99c5bdb?reconnect=true" />
+            <property name="hibernate.connection.url" value="#" />
             <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-            <property name="hibernate.connection.username" value="b3628d6d14baeb" />
-            <property name="hibernate.connection.password" value="27a24e27" />
+            <property name="hibernate.connection.username" value="#" />
+            <property name="hibernate.connection.password" value="#" />
             <property name="hibernate.archive.autodetection" value="class" />
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
