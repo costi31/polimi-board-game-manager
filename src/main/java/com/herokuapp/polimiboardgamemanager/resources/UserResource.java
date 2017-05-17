@@ -65,7 +65,7 @@ public class UserResource {
     }
     
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON} )
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
     public Response create(User user) {
         UserDao.getInstance().createUser(user);
