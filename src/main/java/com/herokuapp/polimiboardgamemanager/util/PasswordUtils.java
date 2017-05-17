@@ -1,7 +1,7 @@
 package com.herokuapp.polimiboardgamemanager.util;
 
 import java.security.MessageDigest;
-import java.util.Base64;
+import javax.xml.bind.DatatypeConverter;
 
 public class PasswordUtils {
 
@@ -14,7 +14,7 @@ public class PasswordUtils {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(plainTextPassword.getBytes("UTF-8"));
             byte[] passwordDigest = md.digest();
-            return new String(Base64.getEncoder().encode(passwordDigest));
+            return new String(DatatypeConverter.printBase64Binary(passwordDigest));
         } catch (Exception e) {
             throw new RuntimeException("Exception encoding password", e);
         }

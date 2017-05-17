@@ -1,8 +1,7 @@
 package com.herokuapp.polimiboardgamemanager.dao;
 
 import java.security.Key;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -68,11 +67,16 @@ public class UserDao {
     }
 
     public String issueToken(String username, UriInfo uriInfo) {
+        long oneMinuteInMillis=60000;
+        Calendar date = Calendar.getInstance();
+        long t = date.getTimeInMillis();
+        Date expirationDate = new Date(t + (10 * oneMinuteInMillis));
+        
         String jwtToken = Jwts.builder()
                             .setSubject(username)
                             .setIssuer(uriInfo.getAbsolutePath().toString())
                             .setIssuedAt(new Date())
-                            .setExpiration(toDate(LocalDateTime.now().plusMinutes(15L)))
+                            .setExpiration(expirationDate)
                             .signWith(SignatureAlgorithm.HS512, SIGNING_KEY)
                             .compact();
         
@@ -80,8 +84,8 @@ public class UserDao {
 
     }
     
-    private Date toDate(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-    }    
+//    private Date toDate(LocalDateTime localDateTime) {
+//        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+//    }    
 
 }
