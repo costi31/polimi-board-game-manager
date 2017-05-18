@@ -2,28 +2,33 @@ package com.herokuapp.polimiboardgamemanager.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Link;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.herokuapp.polimiboardgamemanager.model.User;
-import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserResourceTest extends JerseyTest {
     
     private static final String TARGET = "/users";
+    
+    private static final String NEW_USERNAME = "cody";
+    private static final String NEW_FULLNAME = "Cody Test";
 
     @Override
     protected Application configure() {
@@ -32,10 +37,10 @@ public class UserResourceTest extends JerseyTest {
 
 
     @Test
-    public void testGetAllUsers() {
+    public void t1_getAllUsers() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("testGetAllUsers");
-        List<User> allUsers = target(TARGET).request(MediaType.APPLICATION_JSON).get(new GenericType<List<User>>() {});
+        System.out.println("t1_getAllUsers");
+        List<User> allUsers = getAllUsers();
         
         System.out.println(allUsers.get(0).toString());
         
@@ -52,17 +57,81 @@ public class UserResourceTest extends JerseyTest {
     }
     
     @Test
-    public void testCreateUser() {
+    public void t2_createUser() {
         System.out.println("----------------------------------------------------------------");
         System.out.println("testCreateUser");
-        
-        User user = new User("Bob Test", "bob", "bob", true);
-        Response response = target(TARGET).request().post(Entity.entity(user, MediaType.APPLICATION_JSON));
+               
+        Form form = new Form();
+        // Here I assume that there is a test user with username=bob and password=bob
+        form.param("fullName", NEW_FULLNAME);
+        form.param("username", NEW_USERNAME);
+        form.param("password", NEW_USERNAME);
+        Response response = target(TARGET).request().post(Entity.form(form));
         
         URI location = response.getLocation();
         System.out.print(location);
 
         assertEquals(Response.Status.CREATED, Response.Status.fromStatusCode(response.getStatus()));
+    }
+       
+    @Test
+    public void t3_loginFail() {
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("t3_loginFail");
+        
+        Response response = login(NEW_USERNAME, "abc");
+        
+        assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
+    }
+    
+    @Test
+    public void t4_loginSuccess() {
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("t4_loginSuccess");
+
+        Response response = login(NEW_USERNAME, NEW_USERNAME);
+        
+        String authenticationBearer = response.getHeaderString(HttpHeaders.AUTHORIZATION);
+        
+        System.out.println(authenticationBearer);
+        
+        assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
+    }    
+    
+    @Test
+    public void t5_getUser() {
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("t5_getUser");
+        
+        User bob = target(TARGET).path("/114").request().get(User.class);
+        
+        System.out.println(bob);
+        
+        assertNotNull(bob);
+    }    
+    
+    @Test
+    public void t6_removeUser() {
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("t6_removeUser");
+        
+        Response loginResponse = login(NEW_USERNAME, NEW_USERNAME);
+        String authenticationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
+        
+        // To get the id of the new user created before I have to scan the full name of the users
+        List<User> allUsers = getAllUsers();
+        long id = 0;
+        for (User us: allUsers)
+            if (us.getFullName().equals(NEW_FULLNAME))
+                id = us.getId();
+        
+        System.out.println("User to delete: "+id);
+        
+        System.out.println("Authentication: "+authenticationBearer);
+        
+        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authenticationBearer).delete();
+        
+        assertEquals(Response.Status.NO_CONTENT, Response.Status.fromStatusCode(response.getStatus()));
     }
     
 //    @Test
@@ -124,4 +193,16 @@ public class UserResourceTest extends JerseyTest {
 //            
 //        assertTrue(count >= 0);
 //    }    
+    
+    private Response login(String username, String password) {
+        Form form = new Form();
+        // Here I assume that there is a test user with username=bob and password=bob
+        form.param("username", username);
+        form.param("password", password);
+        return target(TARGET+"/login").request().post(Entity.form(form));
+    }
+    
+    private List<User> getAllUsers() {
+        return target(TARGET).request(MediaType.APPLICATION_JSON).get(new GenericType<List<User>>() {});
+    }
 }
