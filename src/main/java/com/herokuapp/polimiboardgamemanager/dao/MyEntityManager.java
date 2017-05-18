@@ -66,5 +66,13 @@ public class MyEntityManager {
         em.flush();
         em.getTransaction().commit();
     }
+    
+    public Object findEntity(Class<?> cls, long id) {
+        return em.find(cls, id);
+    }
+    
+    public void removeEntity(Class<?> cls, long id) {
+        em.remove(em.getReference(cls, id));
+    }
 
 }
