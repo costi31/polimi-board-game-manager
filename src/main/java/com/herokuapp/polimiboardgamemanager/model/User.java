@@ -30,6 +30,7 @@ import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
     @NamedQuery(name = User.FIND_ALL_NAME_DESC, query = "SELECT u FROM User u ORDER BY u.fullName DESC"),
     @NamedQuery(name = User.FIND_ALL_NAME_ASC, query = "SELECT u FROM User u ORDER BY u.fullName ASC"),
     @NamedQuery(name = User.FIND_BY_LOGIN_PASSWORD, query = "SELECT u FROM User u WHERE u.username = :username AND u.password = :password"),
+    @NamedQuery(name = User.FIND_BY_USERNAME, query = "SELECT u FROM User u WHERE u.username = :username"),
     @NamedQuery(name = User.COUNT_ALL, query = "SELECT COUNT(u) FROM User u")
 })
 public class User implements Serializable {
@@ -41,7 +42,8 @@ public class User implements Serializable {
     public static final String FIND_ALL_NAME_DESC = "User.findAllNameDesc";
     public static final String FIND_ALL_NAME_ASC = "User.findAllNameAsc";
     public static final String COUNT_ALL = "User.countAll";
-    public static final String FIND_BY_LOGIN_PASSWORD = "User.findByLoginAndPassword";    
+    public static final String FIND_BY_LOGIN_PASSWORD = "User.findByLoginAndPassword";
+    public static final String FIND_BY_USERNAME = "User.findByUsername";
 
     @Transient
     private static final long serialVersionUID = -4504381318096463953L;
