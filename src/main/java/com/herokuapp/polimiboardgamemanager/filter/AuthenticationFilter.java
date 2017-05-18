@@ -1,7 +1,7 @@
 package com.herokuapp.polimiboardgamemanager.filter;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.io.IOException;
+import java.security.Key;
 
 import javax.annotation.Priority;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.DatatypeConverter;
 
-import java.io.IOException;
-import java.security.Key;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Secured
 @Provider
@@ -24,7 +24,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     
     public static final Key SIGNING_KEY = new SecretKeySpec(DatatypeConverter.parseBase64Binary(
             System.getenv("SIGNING_KEY")
-            ), SignatureAlgorithm.HS512.getJcaName());    
+            ), SignatureAlgorithm.HS512.getJcaName());
+    
+    public static String validateToken(String token) throws Exception {
+        // Check if it was issued by the server and if it's not expired
+        // Throw an Exception if the token is invalid
+        return Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(token).getBody().getSubject();
+    }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -45,16 +51,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
             // Validate the token
             validateToken(token);
-
+            
         } catch (Exception e) {
             requestContext.abortWith(
                 Response.status(Response.Status.UNAUTHORIZED).build());
         }
-    }
-
-    private void validateToken(String token) throws Exception {
-        // Check if it was issued by the server and if it's not expired
-        // Throw an Exception if the token is invalid
-        Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(token);
     }
 }
