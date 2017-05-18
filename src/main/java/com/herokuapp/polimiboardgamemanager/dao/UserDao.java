@@ -20,6 +20,11 @@ public class UserDao {
     private static UserDao instance = null;
     
     /**
+     * Separator between user id and username in the subject field of the token
+     */
+    private static final String SUBJECT_ID_SEPARATOR = "@";    
+    
+    /**
      * Gets the instance of BoardGameDao
      * @return instance of BoardGameDao
      */
@@ -33,16 +38,57 @@ public class UserDao {
     private UserDao() {
     }
     
-    public void createUser(User user) {
-        System.out.println(user);
-        System.out.println("username: "+user.getUsername());
-        System.out.println("pass: "+user.getPassword());
-//        EntityManager em = MyEntityManager.getInstance().getEm();
-//        em.getTransaction().begin();
-//        em.persist(user);
-//        em.flush();
-//        em.getTransaction().commit();
-        MyEntityManager.getInstance().persistEntity(user);
+    public long createUser(String fullName, String username, String password) throws Exception {
+        try {
+            if (!doesUsernameExist(username)) {
+                // If username doesn't exists I create the user
+                User user = new User(fullName, username, password, false);
+                MyEntityManager.getInstance().persistEntity(user);
+                return user.getId();
+            } else
+                throw new IllegalArgumentException("Bad username: user with desired username already exists!");
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Bad username: user with desired username already exists!");
+        }
+    }
+    
+    
+    public void removeUser(long id, String authorizationBearer) throws Exception {     
+        try {
+            String token = authorizationBearer.substring("Bearer".length()).trim();
+            String authenticatedSubject = AuthenticationFilter.validateToken(token);
+            long authenticatedId = Long.parseLong(authenticatedSubject.split(SUBJECT_ID_SEPARATOR)[0]);
+            
+            // Verify if the id of authenticated user corresponds to the id of the user to remove
+            if (authenticatedId != id)
+                throw new SecurityException("User unauthorized");
+            
+            MyEntityManager.getInstance().removeEntity(User.class, id);
+        } catch (Exception e) {
+            throw new SecurityException("User unauthorized");
+        }
+    }
+    
+    public User findById(long id) {
+        return (User) MyEntityManager.getInstance().findEntity(User.class, id);
+    }
+    
+    public User findByUsername(String username) throws Exception {
+        EntityManager em = MyEntityManager.getInstance().getEm();
+        TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_USERNAME, User.class);
+        query.setParameter("username", username);
+        User user = query.getSingleResult();
+
+        return user;
+    }
+    
+    public boolean doesUsernameExist(String username) {
+        try {
+            findByUsername(username);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
     
     public List<User> findAllUsersNameOrd(boolean desc) {
@@ -58,7 +104,7 @@ public class UserDao {
         return findAllUsersNameOrd(false);
     }
     
-    public void authenticate(String username, String password) throws Exception {
+    public long authenticate(String username, String password) throws Exception {
         EntityManager em = MyEntityManager.getInstance().getEm();
         TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_LOGIN_PASSWORD, User.class);
         query.setParameter("username", username);
@@ -67,16 +113,18 @@ public class UserDao {
 
         if (user == null)
             throw new SecurityException("Invalid user/password");
+        
+        return user.getId();
     }
 
-    public String issueToken(String username, UriInfo uriInfo) {
+    public String issueToken(long userId, String username, UriInfo uriInfo) {
         long oneMinuteInMillis=60000;
         Calendar date = Calendar.getInstance();
         long t = date.getTimeInMillis();
         Date expirationDate = new Date(t + (60 * oneMinuteInMillis));
         
         String jwtToken = Jwts.builder()
-                            .setSubject(username)
+                            .setSubject(userId+SUBJECT_ID_SEPARATOR+username)
                             .setIssuer(uriInfo.getAbsolutePath().toString())
                             .setIssuedAt(new Date())
                             .setExpiration(expirationDate)
