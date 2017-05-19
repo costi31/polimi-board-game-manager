@@ -13,10 +13,13 @@ import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BoardGamesResourceTest extends JerseyTest {
 
     @Override

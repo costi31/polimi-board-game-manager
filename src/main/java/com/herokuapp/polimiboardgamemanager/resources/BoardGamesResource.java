@@ -3,22 +3,24 @@ package com.herokuapp.polimiboardgamemanager.resources;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
+import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 
 // Will map the resource to the URL boardgames
@@ -58,30 +60,40 @@ public class BoardGamesResource {
     }
 
     @POST
-    @Produces(MediaType.TEXT_HTML)
+    @Secured
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void newBoardGameForm(@FormParam("name") String name,
-                                 @FormParam("designers") String designers,
-                                 @FormParam("cover") String cover) throws IOException {
+    public Response newBoardGameForm(@FormParam("name") String name,
+                                     @FormParam("designers") String designers,
+                                     @FormParam("cover") String cover,
+                                     @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer)
+                                    throws IOException {
         
-        BoardGameDao.getInstance().insertBoardGame(name, designers, cover);
-        //servletResponse.sendRedirect("../create_boardgame.html");
+        try {
+            long id = BoardGameDao.getInstance().createBoardGame(name, designers, cover, authorizationBearer);
+            return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(id)).build()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
     }
     
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void newBoardGameJson(BoardGame board,
-                        @Context HttpServletResponse servletResponse) throws IOException {
+    @Secured
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response newBoardGameApp(BoardGame board,
+                                    @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer)
+                                   throws IOException {
         
-        BoardGameDao.getInstance().insertBoardGame(board);
-
-        //servletResponse.sendRedirect("../create_boardgame.html");
+        try {
+            long id = BoardGameDao.getInstance().createBoardGame(board, authorizationBearer);
+            return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(id)).build()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
     }
     
 
-    @Path("{board_id}")
-    public BoardGameResource getBoard(@PathParam("board_id") long id) {
+    @Path("/{board_id}")
+    public BoardGameResource getBoard(@PathParam("board_id") Long id) {
         return new BoardGameResource(uriInfo, request, id);
     }
 

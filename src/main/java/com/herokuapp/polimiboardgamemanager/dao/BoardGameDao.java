@@ -6,7 +6,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
+import com.herokuapp.polimiboardgamemanager.model.User;
 
 /**
  * Singleton DAO class to access and manage a board game
@@ -49,13 +51,27 @@ public class BoardGameDao {
      * Inserts a new board game
      * @param board BoardGame object to insert
      */
-    public void insertBoardGame(BoardGame board) {
-        MyEntityManager.getInstance().persistEntity(board);
+    public long createBoardGame(BoardGame board, String authorizationBearer) throws Exception  {
+        try {
+            String token = authorizationBearer.substring("Bearer".length()).trim();
+            String authenticatedSubject = AuthenticationFilter.validateToken(token);
+            long authenticatedUserId = Long.parseLong(authenticatedSubject.split(UserDao.SUBJECT_ID_SEPARATOR)[0]);
+            
+            // Verify if the authenticated user is a power user
+            if (! UserDao.getInstance().findById(authenticatedUserId).isPowerUser())
+                throw new SecurityException("User unauthorized");
+            
+            MyEntityManager.getInstance().persistEntity(board);
+            
+            return board.getId();
+        } catch (Exception e) {
+            throw new SecurityException("User unauthorized");
+        }        
     }
     
-    public void insertBoardGame(String name, String designers, String cover) {
+    public long createBoardGame(String name, String designers, String cover, String authorizationBearer) throws Exception {
         BoardGame board = new BoardGame(name, designers, cover);
-        insertBoardGame(board);
+        return createBoardGame(board, authorizationBearer);
     }    
     
     /**
