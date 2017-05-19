@@ -72,7 +72,10 @@ public class MyEntityManager {
     }
     
     public void removeEntity(Class<?> cls, long id) {
+        em.getTransaction().begin();        
         em.remove(em.getReference(cls, id));
+        em.flush();
+        em.getTransaction().commit();
     }
 
 }
