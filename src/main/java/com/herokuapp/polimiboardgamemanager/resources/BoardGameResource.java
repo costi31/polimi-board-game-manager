@@ -43,28 +43,28 @@ public class BoardGameResource {
         return BoardGameDao.getInstance().getBoardGame(id);
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_XML)
-    public Response putTodo(JAXBElement<BoardGame> board) {
-        BoardGame c = board.getValue();
-        return putAndGetResponse(c);
-    }
+//    @PUT
+//    @Consumes(MediaType.APPLICATION_XML)
+//    public Response putTodo(JAXBElement<BoardGame> board) {
+//        BoardGame c = board.getValue();
+//        return putAndGetResponse(c);
+//    }
 
     @DELETE
     public void deleteBoardGame() {
         BoardGameDao.getInstance().deleteBoardGame(id);
     }
 
-    private Response putAndGetResponse(BoardGame board) {
-        Response res;
-        if(BoardGameDao.getInstance().getBoardGame(board.getId()) != null) {
-                res = Response.noContent().build();
-        } else {
-                res = Response.created(uriInfo.getAbsolutePath()).build();
-                BoardGameDao.getInstance().insertBoardGame(board);
-        }
-
-        return res;
-    }
+//    private Response putAndGetResponse(BoardGame board) {
+//        Response res;
+//        if(BoardGameDao.getInstance().getBoardGame(board.getId()) != null) {
+//                res = Response.noContent().build();
+//        } else {
+//                res = Response.created(uriInfo.getAbsolutePath()).build();
+//                BoardGameDao.getInstance().createBoardGame(board);
+//        }
+//
+//        return res;
+//    }
 
 }
