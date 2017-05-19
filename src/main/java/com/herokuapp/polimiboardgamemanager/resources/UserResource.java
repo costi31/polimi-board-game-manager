@@ -17,8 +17,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 
 import com.herokuapp.polimiboardgamemanager.dao.UserDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
@@ -26,7 +24,6 @@ import com.herokuapp.polimiboardgamemanager.model.User;
 
 @Path("/users")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-@XmlAccessorType(XmlAccessType.FIELD)
 public class UserResource {
     
     // ======================================
@@ -98,6 +95,13 @@ public class UserResource {
     }
     
     @GET
+    @Path("/count")
+    @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public long getCount() {
+        return UserDao.getInstance().getCount();
+    }        
+    
+    @GET
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
         User user = UserDao.getInstance().findById(id);
@@ -106,7 +110,7 @@ public class UserResource {
             return Response.status(Response.Status.NOT_FOUND).build();
 
         return Response.ok(user).build();
-    }    
+    }
     
     @DELETE
     @Path("/{id}")

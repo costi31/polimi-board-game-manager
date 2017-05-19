@@ -2,6 +2,7 @@ package com.herokuapp.polimiboardgamemanager.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.List;
@@ -57,9 +58,18 @@ public class UserResourceTest extends JerseyTest {
     }
     
     @Test
-    public void t2_createUser() {
+    public void t2_getUsersCount() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("testCreateUser");
+        System.out.println("t2_getUsersCount");
+        long count = target(TARGET).path("/count").request(MediaType.TEXT_PLAIN).get(Long.class);
+        System.out.println("Total existing users: "+String.valueOf(count));
+        assertTrue(count > 0);
+    }
+    
+    @Test
+    public void t3_createUser() {
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("t3_createUser");
                
         Form form = new Form();
         // Here I assume that there is a test user with username=bob and password=bob
@@ -75,9 +85,9 @@ public class UserResourceTest extends JerseyTest {
     }
        
     @Test
-    public void t3_loginFail() {
+    public void t4_loginFail() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t3_loginFail");
+        System.out.println("t4_loginFail");
         
         Response response = login(NEW_USERNAME, "abc");
         
@@ -85,9 +95,9 @@ public class UserResourceTest extends JerseyTest {
     }
     
     @Test
-    public void t4_loginSuccess() {
+    public void t5_loginSuccess() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t4_loginSuccess");
+        System.out.println("t5_loginSuccess");
 
         Response response = login(NEW_USERNAME, NEW_USERNAME);
         
@@ -99,9 +109,9 @@ public class UserResourceTest extends JerseyTest {
     }    
     
     @Test
-    public void t5_getUser() {
+    public void t6_getUser() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t5_getUser");
+        System.out.println("t6_getUser");
         
         User bob = target(TARGET).path("/114").request().get(User.class);
         
@@ -111,9 +121,9 @@ public class UserResourceTest extends JerseyTest {
     }    
     
     @Test
-    public void t6_removeUser() {
+    public void t7_removeUser() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t6_removeUser");
+        System.out.println("t7_removeUser");
         
         Response loginResponse = login(NEW_USERNAME, NEW_USERNAME);
         String authenticationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);

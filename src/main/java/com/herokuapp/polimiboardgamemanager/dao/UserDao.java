@@ -134,6 +134,16 @@ public class UserDao {
         return jwtToken;
 
     }
+
+    /**
+     * Gets count of existing users
+     * @return long count of users
+     */
+    public long getCount() {
+        EntityManager em = MyEntityManager.getInstance().getEm();
+        TypedQuery<Long> query = em.createNamedQuery(User.COUNT_ALL, Long.class);
+        return query.getSingleResult();
+    }
     
 //    private Date toDate(LocalDateTime localDateTime) {
 //        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
