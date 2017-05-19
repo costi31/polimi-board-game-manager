@@ -1,11 +1,17 @@
 package com.herokuapp.polimiboardgamemanager.dao;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 import javax.ws.rs.core.UriInfo;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
@@ -91,19 +97,38 @@ public class UserDao {
         }
     }
     
-    public List<User> findAllUsersNameOrd(boolean desc) {
+    public List<User> findAllUsers(String orderByString, String orderTypeString) throws Exception {
         EntityManager em = MyEntityManager.getInstance().getEm();
-        String queryName = desc ? User.FIND_ALL_NAME_DESC : User.FIND_ALL_NAME_ASC;
-        TypedQuery<User> query = em.createNamedQuery(queryName, User.class);
-        List<User> allUsers = query.getResultList();
-
-        return allUsers;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+        Root<User> us = cq.from(User.class);
+        cq.select(us);
+        
+        // Get the order criteria
+        // it throws exception if strings don't correspond to allowed enum values
+        User.OrderBy orderBy = User.OrderBy.valueOf(orderByString);
+        User.OrderType orderType = User.OrderType.valueOf(orderTypeString.toUpperCase());
+        
+        List<Order> orderCriteria = new ArrayList<Order>();
+        Expression exp;
+        if (orderBy.equals(User.OrderBy.fullName)) {
+            exp = us.get(orderBy.toString());
+            orderCriteria.add(
+                              (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
+                             );
+        }
+        
+        exp = us.get(User.OrderBy.id.toString());
+        orderCriteria.add(
+                          (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
+                         );
+        
+        cq.orderBy(orderCriteria);
+        
+        TypedQuery<User> q = em.createQuery(cq);
+        return q.getResultList();
     }
-    
-    public List<User> findAllUsersNameOrd() {
-        return findAllUsersNameOrd(false);
-    }
-    
+        
     public long authenticate(String username, String password) throws Exception {
         EntityManager em = MyEntityManager.getInstance().getEm();
         TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_LOGIN_PASSWORD, User.class);

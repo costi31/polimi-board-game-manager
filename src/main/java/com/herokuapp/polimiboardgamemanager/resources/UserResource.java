@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -11,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
@@ -89,9 +91,15 @@ public class UserResource {
 //    }
     
     @GET
-    public Response findAllUsers() {
-        GenericEntity<List<User>> list = new GenericEntity<List<User>>(UserDao.getInstance().findAllUsersNameOrd()){};
-        return Response.ok(list).build();
+    public Response findAllUsers(@DefaultValue("id") @QueryParam("orderBy") String orderBy,
+                                 @DefaultValue("ASC") @QueryParam("orderType") String orderType) throws Exception {
+        
+        try {
+            GenericEntity<List<User>> list = new GenericEntity<List<User>>(UserDao.getInstance().findAllUsers(orderBy, orderType)){};
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
     
     @GET
