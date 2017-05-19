@@ -1,10 +1,17 @@
 package com.herokuapp.polimiboardgamemanager.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
@@ -107,15 +114,37 @@ public class BoardGameDao {
         long count = (long) em.createQuery("SELECT count(id) FROM BoardGame board").getSingleResult();
         return count;
     }
-    
-    /**
-     * Gets the list of all the existing board games
-     * @return list of existing BoardGame(s)
-     */
-    public List<BoardGame> getAllBoardGames() {
+      
+    public List<BoardGame> findAllBoardGames(String orderByString, String orderTypeString) throws Exception {
         EntityManager em = MyEntityManager.getInstance().getEm();
-        List<BoardGame> allBoards = (List<BoardGame>) em.createQuery("SELECT board FROM BoardGame board").getResultList();
-        return allBoards;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<BoardGame> cq = cb.createQuery(BoardGame.class);
+        Root<BoardGame> us = cq.from(BoardGame.class);
+        cq.select(us);
+        
+        // Get the order criteria
+        // it throws exception if strings don't correspond to allowed enum values
+        BoardGame.OrderBy orderBy = BoardGame.OrderBy.valueOf(orderByString);
+        BoardGame.OrderType orderType = BoardGame.OrderType.valueOf(orderTypeString.toUpperCase());
+        
+        List<Order> orderCriteria = new ArrayList<Order>();
+        Expression exp;
+        if (orderBy.equals(BoardGame.OrderBy.name)) {
+            exp = us.get(orderBy.toString());
+            orderCriteria.add(
+                              (orderType.equals(BoardGame.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
+                             );
+        }
+        
+        exp = us.get(BoardGame.OrderBy.id.toString());
+        orderCriteria.add(
+                          (orderType.equals(BoardGame.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
+                         );
+        
+        cq.orderBy(orderCriteria);
+        
+        TypedQuery<BoardGame> q = em.createQuery(cq);
+        return q.getResultList();
     }
 
 }

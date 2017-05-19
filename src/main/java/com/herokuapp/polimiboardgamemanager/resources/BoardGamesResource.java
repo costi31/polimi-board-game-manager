@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -11,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
@@ -20,8 +22,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
+import com.herokuapp.polimiboardgamemanager.dao.UserDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
+import com.herokuapp.polimiboardgamemanager.model.User;
 
 // Will map the resource to the URL boardgames
 @Path("/boardgames")
@@ -37,19 +41,16 @@ public class BoardGamesResource {
 
     // Return the list of board games for applications
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public Response getBoards() {
-        GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().getAllBoardGames()){};
-        return Response.ok(list).build();
+    public Response getBoards(@DefaultValue("id") @QueryParam("orderBy") String orderBy,
+                              @DefaultValue("ASC") @QueryParam("orderType") String orderType) {
+
+        try {
+            GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().findAllBoardGames(orderBy, orderType)){};
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
-    
-    // Return the list of board games to the user in the browser
-    @GET
-    @Produces(MediaType.TEXT_XML)
-    public Response getBoardsBrowser() {
-        GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().getAllBoardGames()){};
-        return Response.ok(list).build();
-    }  
 
     // returns the number of board games
     @GET
