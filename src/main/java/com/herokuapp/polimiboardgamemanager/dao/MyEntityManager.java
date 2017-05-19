@@ -9,6 +9,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Singleton class to manage entities of JPA
  * @author Luca Luciano Costanzo
@@ -17,6 +20,8 @@ import javax.persistence.Persistence;
 public class MyEntityManager {
     
     private static MyEntityManager instance = null;
+    
+    private static final Logger LOGGER = LogManager.getLogger(MyEntityManager.class);
     
     private EntityManagerFactory emfactory;
     private EntityManager em;    
@@ -40,7 +45,7 @@ public class MyEntityManager {
             configOverrides.put("hibernate.connection.username", username);
             configOverrides.put("hibernate.connection.password", password);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.fatal(e.getMessage());
         }
         
         
