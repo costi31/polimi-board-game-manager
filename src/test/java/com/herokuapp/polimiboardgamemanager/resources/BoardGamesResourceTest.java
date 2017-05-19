@@ -29,9 +29,9 @@ public class BoardGamesResourceTest extends JerseyTest {
 
 
     @Test
-    public void testGetAllBoardGames() {
+    public void t1_findAllBoardGames() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("testGetAllBoardGames");
+        System.out.println("t1_findAllBoardGames");
         List<BoardGame> allBoards = target("/boardgames").request(MediaType.APPLICATION_XML).get(new GenericType<List<BoardGame>>() {});
         
         
@@ -50,9 +50,9 @@ public class BoardGamesResourceTest extends JerseyTest {
     }
     
     @Test
-    public void testGetBoardGame4() {
+    public void t2_getBoardGame4() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("testGetBoardGame4");
+        System.out.println("t2_getBoardGame4");
         final BoardGame board = target().path("boardgames/4").request().get(BoardGame.class);
         
         long id = board.getId();
@@ -63,22 +63,12 @@ public class BoardGamesResourceTest extends JerseyTest {
         assertEquals(4, id);
         assertEquals("boardgame1", name);
     }
+      
     
     @Test
-    public void testGetBoardGame4Json() {
+    public void t3_getBoardGameLinks() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("testGetBoardGame4Json");        
-        final String boardJson = target().path("boardgames/4").request(MediaType.APPLICATION_JSON).get(String.class);
-        
-        System.out.println(boardJson);
-        
-        assertEquals(1, 1);
-    }    
-    
-    @Test
-    public void testBoardGameLinks() {
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("testGetBoardGameLinks");        
+        System.out.println("t3_getBoardGameLinks");        
         final BoardGame board = target().path("boardgames/4").request().get(BoardGame.class);
             
         List<Link> links = board.getLinks();
@@ -99,7 +89,7 @@ public class BoardGamesResourceTest extends JerseyTest {
     }
     
     @Test
-    public void testBoardGameCount() {
+    public void t4_boardGamesCount() {
         System.out.println("----------------------------------------------------------------");
         System.out.println("testBoardGameCount");        
         final long count = target("/boardgames").path("count").request().get(Long.class);
