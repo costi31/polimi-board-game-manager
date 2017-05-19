@@ -28,7 +28,7 @@ public class UserDao {
     /**
      * Separator between user id and username in the subject field of the token
      */
-    private static final String SUBJECT_ID_SEPARATOR = "@";    
+    public static final String SUBJECT_ID_SEPARATOR = "@";    
     
     /**
      * Gets the instance of BoardGameDao
