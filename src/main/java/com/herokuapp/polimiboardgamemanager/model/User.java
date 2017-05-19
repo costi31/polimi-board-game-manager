@@ -33,17 +33,17 @@ import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
 })
 public class User implements Serializable {
     
-    public static enum OrderBy {
-        fullName, id
-    }
-    
-    public static enum OrderType {
-        ASC, DESC
-    }
-    
     // ======================================
     // =             Constants              =
     // ======================================
+    
+    public enum OrderBy {
+        fullName, id
+    }
+    
+    public enum OrderType {
+        ASC, DESC
+    }
 
     public static final String COUNT_ALL = "User.countAll";
     public static final String FIND_BY_LOGIN_PASSWORD = "User.findByLoginAndPassword";
@@ -54,6 +54,10 @@ public class User implements Serializable {
     
     @Transient
     private static final String BASE_URL = "https://polimi-board-game-manager.herokuapp.com/users/"; 
+    
+    // ======================================
+    // =             Attributes             =
+    // ======================================
     
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
