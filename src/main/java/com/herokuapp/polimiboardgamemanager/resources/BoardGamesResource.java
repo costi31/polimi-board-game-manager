@@ -12,8 +12,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
@@ -21,6 +23,7 @@ import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 
 // Will map the resource to the URL boardgames
 @Path("/boardgames")
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class BoardGamesResource {
 
     // Allows to insert contextual objects into the class,
@@ -33,20 +36,22 @@ public class BoardGamesResource {
     // Return the list of board games for applications
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public List<BoardGame> getBoards() {
-        return BoardGameDao.getInstance().getAllBoardGames();
+    public Response getBoards() {
+        GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().getAllBoardGames()){};
+        return Response.ok(list).build();
     }
     
     // Return the list of board games to the user in the browser
     @GET
     @Produces(MediaType.TEXT_XML)
-    public List<BoardGame> getBoardsBrowser() {
-        return BoardGameDao.getInstance().getAllBoardGames();
-    }    
+    public Response getBoardsBrowser() {
+        GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().getAllBoardGames()){};
+        return Response.ok(list).build();
+    }  
 
     // returns the number of board games
     @GET
-    @Path("count")
+    @Path("/count")
     @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public long getCount() {
         return BoardGameDao.getInstance().getBoardGamesCount();
@@ -76,7 +81,7 @@ public class BoardGamesResource {
     
 
     @Path("{board_id}")
-    public BoardGameResource getBoard(@PathParam("board_id") int id) {
+    public BoardGameResource getBoard(@PathParam("board_id") long id) {
         return new BoardGameResource(uriInfo, request, id);
     }
 
