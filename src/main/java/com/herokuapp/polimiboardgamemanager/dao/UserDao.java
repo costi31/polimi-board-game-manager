@@ -169,7 +169,7 @@ public class UserDao {
         TypedQuery<Long> query = em.createNamedQuery(User.COUNT_ALL, Long.class);
         return query.getSingleResult();
     }
-    
+        
 //    private Date toDate(LocalDateTime localDateTime) {
 //        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 //    }    

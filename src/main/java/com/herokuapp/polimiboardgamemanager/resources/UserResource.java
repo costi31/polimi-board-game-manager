@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -33,7 +34,10 @@ public class UserResource {
     // ======================================
 
     @Context
-    private UriInfo uriInfo;
+    UriInfo uriInfo;
+    
+    @Context
+    Request request;
     
     // ======================================
     // =          Business methods          =
@@ -118,6 +122,11 @@ public class UserResource {
             return Response.status(Response.Status.NOT_FOUND).build();
 
         return Response.ok(user).build();
+    }
+    
+    @Path("/{userId}/plays/{playId}")
+    public PlayResource getPlay(@PathParam("userId") Long userId, @PathParam("playId") Long playId) {
+        return new PlayResource(uriInfo, request, playId);
     }
     
     @DELETE
