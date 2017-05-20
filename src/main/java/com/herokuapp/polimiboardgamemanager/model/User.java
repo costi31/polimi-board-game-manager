@@ -5,10 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.ws.rs.core.Link;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -75,6 +85,11 @@ public class User implements Serializable {
     
     @Column(name = "power_user")
     private boolean powerUser;
+    
+    @XmlTransient
+    @OneToMany(mappedBy="userCreator")
+    private List<Play> plays;
+    
 
     public User() {
     }
@@ -170,6 +185,14 @@ public class User implements Serializable {
         this.powerUser = powerUser;
     }
     
+    /**
+     * @return the plays
+     */
+    public List<Play> getPlays() {
+        return plays;
+    }
+    
+    
     @XmlElement(name = "link")
     @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
     public List<Link> getLinks()
@@ -177,6 +200,7 @@ public class User implements Serializable {
         List<Link> links = new ArrayList<Link>();
         links.add(Link.fromUri(BASE_URL+String.valueOf(id)).rel("self").build());
         links.add(Link.fromUri(BASE_URL).rel("parent").build());
+        links.add(Link.fromUri(BASE_URL+String.valueOf(id)+"/plays").rel("plays").build());
         
         return links;
     }

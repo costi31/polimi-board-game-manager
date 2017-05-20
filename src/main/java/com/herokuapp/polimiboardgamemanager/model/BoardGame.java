@@ -11,12 +11,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.ws.rs.core.Link;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  
 @XmlRootElement
@@ -64,6 +66,11 @@ public class BoardGame implements Serializable {
     @Column(name = "cover")
     private String cover;
     
+    @XmlTransient
+    @OneToMany(mappedBy="boardGame")
+    private List<Play> plays;
+    
+    
     public BoardGame(){
     }
        
@@ -109,6 +116,13 @@ public class BoardGame implements Serializable {
     public void setCover(String cover) {
         this.cover = cover;
     }
+    
+    /**
+     * @return the plays
+     */
+    public List<Play> getPlays() {
+        return plays;
+    }    
     
     @XmlElement(name = "link")
     @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
