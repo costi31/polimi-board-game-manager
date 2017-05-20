@@ -22,10 +22,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
-import com.herokuapp.polimiboardgamemanager.dao.UserDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
-import com.herokuapp.polimiboardgamemanager.model.User;
 
 // Will map the resource to the URL boardgames
 @Path("/boardgames")
