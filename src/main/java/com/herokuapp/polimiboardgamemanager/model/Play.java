@@ -1,8 +1,9 @@
 package com.herokuapp.polimiboardgamemanager.model;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +37,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @Entity
 @Table(name = "play")
 @NamedQueries({
-//    @NamedQuery(name = Play.FIND_BY_LOGIN_PASSWORD, query = "SELECT u FROM User u WHERE u.username = :username AND u.password = :password"),
     @NamedQuery(name = Play.FIND_BY_USER, query = "SELECT p FROM Play p WHERE p.userCreator = :userCreator"),
     @NamedQuery(name = Play.COUNT_ALL, query = "SELECT COUNT(p) FROM Play p")
 })
@@ -55,7 +55,6 @@ public class Play implements Serializable {
     }
 
     public static final String COUNT_ALL = "Play.countAll";
-//    public static final String FIND_BY_LOGIN_PASSWORD = "User.findByLoginAndPassword";
     public static final String FIND_BY_USER = "Play.findByUser";
 
     private static final long serialVersionUID = -2891773437428236416L;
@@ -79,11 +78,10 @@ public class Play implements Serializable {
     
     @Column(name="date")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private Calendar date;
     
     @Column(name="timeToComplete")
-    @Temporal(TemporalType.TIME)
-    private Date timeToComplete;
+    private Time timeToComplete;
     
     @Column(name="completed")
     private boolean completed;
@@ -96,18 +94,34 @@ public class Play implements Serializable {
     private int playersInvolved;
 
     public Play() {
+        super();
     }
     
-    public Play(User userCreator, BoardGame boardGame) {
-        this(userCreator, boardGame, 1);
+    public Play(User userCreator, BoardGame boardGame, Calendar date) {
+        this(userCreator, boardGame, date, 1, false, null, null);
     }
     
-    public Play(User userCreator, BoardGame boardGame, int playersInvolved) {
+    public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved) {
+        this(userCreator, boardGame, date, playersInvolved, false, null, null);
+    }
+    
+    public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed) {
+        this(userCreator, boardGame, date, playersInvolved, completed, null, null);
+    }
+    
+    public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed, Time timeToComplete) {
+        this(userCreator, boardGame, date, playersInvolved, completed, timeToComplete, null);
+    }
+    
+    public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed, Time timeToComplete, User userWinner) {
         super();
         this.userCreator = userCreator;
         this.boardGame = boardGame;
-        this.date = new Date();
+        this.date = date;
         this.playersInvolved = playersInvolved;
+        this.completed = completed;
+        this.timeToComplete = timeToComplete;
+        this.userWinner = userWinner;
     }    
     
     // ======================================
@@ -159,28 +173,28 @@ public class Play implements Serializable {
     /**
      * @return the date
      */
-    public Date getDate() {
+    public Calendar getDate() {
         return date;
     }
 
     /**
      * @param date the date to set
      */
-    public void setDate(Date date) {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 
     /**
      * @return the timeToComplete
      */
-    public Date getTimeToComplete() {
+    public Time getTimeToComplete() {
         return timeToComplete;
     }
 
     /**
      * @param timeToComplete the timeToComplete to set
      */
-    public void setTimeToComplete(Date timeToComplete) {
+    public void setTimeToComplete(Time timeToComplete) {
         this.timeToComplete = timeToComplete;
     }
 
