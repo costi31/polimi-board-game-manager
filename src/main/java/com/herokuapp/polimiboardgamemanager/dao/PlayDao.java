@@ -14,7 +14,9 @@ import javax.persistence.criteria.Root;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.Play;
+import com.herokuapp.polimiboardgamemanager.model.User;
 
 public class PlayDao {
     
@@ -39,6 +41,23 @@ public class PlayDao {
     }
 
     private PlayDao() {
+    }
+    
+    public long createPlay(Play play, String authorizationBearer) throws Exception {
+        try {
+            String token = authorizationBearer.substring("Bearer".length()).trim();
+            String authenticatedSubject = AuthenticationFilter.validateToken(token);
+            long authenticatedId = Long.parseLong(authenticatedSubject.split(SUBJECT_ID_SEPARATOR)[0]);
+            
+            // Verify if the id of authenticated user corresponds to the id of the user to remove
+            if (authenticatedId != play.getUserCreator().getId())
+                throw new SecurityException("User unauthorized");
+            
+            MyEntityManager.getInstance().persistEntity(play);
+            return play.getId();
+        } catch (Exception e) {
+            throw new SecurityException("User unauthorized");
+        }        
     }
     
     public Play findById(long id) {

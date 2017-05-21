@@ -81,7 +81,20 @@ public class UserResource {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
         
-    }    
+    }
+    
+    @POST
+    @Path("/{userId}/plays")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Secured
+    public Response createPlay(Play play, @PathParam("userId") Long userId, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
+        try {
+            long id = PlayDao.getInstance().createPlay(play, authorizationBearer);
+            return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(id)).build()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }        
+    }
     
 //    @POST
 //    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON} )
