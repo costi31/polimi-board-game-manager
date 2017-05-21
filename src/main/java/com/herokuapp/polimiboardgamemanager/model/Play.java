@@ -47,7 +47,7 @@ public class Play implements Serializable {
     // ======================================
     
     public enum OrderBy {
-        fullName, id
+        id, boardGame, date, completed, timeToComplete
     }
     
     public enum OrderType {

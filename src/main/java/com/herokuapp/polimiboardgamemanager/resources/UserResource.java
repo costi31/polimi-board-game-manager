@@ -21,8 +21,10 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.herokuapp.polimiboardgamemanager.dao.PlayDao;
 import com.herokuapp.polimiboardgamemanager.dao.UserDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
+import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
 @Path("/users")
@@ -122,6 +124,20 @@ public class UserResource {
             return Response.status(Response.Status.NOT_FOUND).build();
 
         return Response.ok(user).build();
+    }
+    
+    @GET
+    @Path("/{userId}/plays")
+    public Response getPlaysByUser(@PathParam("userId") Long userId,
+                                   @DefaultValue("id") @QueryParam("orderBy") String orderBy,
+                                   @DefaultValue("ASC") @QueryParam("orderType") String orderType) throws Exception {
+        
+        try {
+            GenericEntity<List<Play>> list = new GenericEntity<List<Play>>(PlayDao.getInstance().findPlaysByUser(userId, orderBy, orderType)){};
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }        
     }
     
     @Path("/{userId}/plays/{playId}")
