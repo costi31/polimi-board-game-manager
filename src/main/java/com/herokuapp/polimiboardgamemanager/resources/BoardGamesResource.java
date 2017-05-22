@@ -25,39 +25,23 @@ import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 
-// Will map the resource to the URL boardgames
 @Path("/boardgames")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class BoardGamesResource {
 
-    // Allows to insert contextual objects into the class,
-    // e.g. ServletContext, Request, Response, UriInfo
+    // ======================================
+    // =          Injection Points          =
+    // ======================================
+    
     @Context
     UriInfo uriInfo;
     @Context
     Request request;
-
-    // Return the list of board games for applications
-    @GET
-    public Response getBoards(@DefaultValue("id") @QueryParam("orderBy") String orderBy,
-                              @DefaultValue("ASC") @QueryParam("orderType") String orderType) {
-
-        try {
-            GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().findAllBoardGames(orderBy, orderType)){};
-            return Response.ok(list).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-    }
-
-    // returns the number of board games
-    @GET
-    @Path("/count")
-    @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public long getCount() {
-        return BoardGameDao.getInstance().getBoardGamesCount();
-    }
-
+    
+    // ======================================
+    // =          POST requests             =
+    // ======================================    
+    
     @POST
     @Secured
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -88,6 +72,30 @@ public class BoardGamesResource {
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+    }
+    
+    // ======================================
+    // =          GET requests              =
+    // ======================================
+
+    @GET
+    public Response getBoards(@DefaultValue("id") @QueryParam("orderBy") String orderBy,
+                              @DefaultValue("ASC") @QueryParam("orderType") String orderType) {
+
+        try {
+            GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().findAllBoardGames(orderBy, orderType)){};
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    // returns the number of board games
+    @GET
+    @Path("/count")
+    @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public long getCount() {
+        return BoardGameDao.getInstance().getBoardGamesCount();
     }
     
 

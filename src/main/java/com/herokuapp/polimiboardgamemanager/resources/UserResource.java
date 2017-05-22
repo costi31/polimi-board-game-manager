@@ -27,6 +27,13 @@ import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
+/**
+ * Resource representing the users. It responds to http requests
+ * sent to path "/users", to manage users and plays associated to the user.
+ * 
+ * @author Luca Luciano Costanzo
+ *
+ */
 @Path("/users")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class UserResource {
@@ -42,9 +49,19 @@ public class UserResource {
     Request request;
     
     // ======================================
-    // =          Business methods          =
-    // ======================================    
+    // =          POST requests             =
+    // ======================================
 
+    /**
+     * It receives POST requests sent to "/users/login" path
+     * and authenticates a user with his username and password.
+     * @param username the username of the user to authenticate
+     * @param password the password of the user to authenticate
+     * @return <b>200 OK</b> containing the authorization bearer in
+     *         the header if the login is successful, <br />
+     *         <b>401 Unauthorized</b> if the username and/or
+     *         password are wrong.
+     */
     @POST
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
@@ -68,6 +85,17 @@ public class UserResource {
         }      
     }
     
+    /**
+     * It receives POST requests sent to "/users" path
+     * and creates a user with the desired attributes.
+     * @param fullName the full name of the user to create
+     * @param username the username of the user to create
+     * @param password the password of the user to create
+     * @return <b>201 Created</b> containing the URI of
+     *         the created user, if everything it's correct,<br />
+     *         <b>409 Conflict</b> if an user with the desired
+     *         username already exists.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response create(@FormParam("fullName") String fullName,
@@ -83,6 +111,18 @@ public class UserResource {
         
     }
     
+    /**
+     * It receives POST requests sent to "/users/{userId}/plays" path
+     * and creates a play for the user, with the desired attributes.
+     * @param play the Play object representation to create
+     * @param userId the id of the user, taken from the url
+     * @param authorizationBearer the authorization bearer
+     *        to ensure user authentication
+     * @return <b>201 Created</b> containing the URI of
+     *         the created play, if everything it's correct,<br />
+     *         <b>401 Unauthorized</b> if the user it's not
+     *         authenticated.
+     */
     @POST
     @Path("/{userId}/plays")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -96,19 +136,25 @@ public class UserResource {
         }        
     }
     
-//    @POST
-//    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON} )
-//    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-//    public Response create(User user) {
-//        try {
-//            UserDao.getInstance().createUser(user);
-//            return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(user.getId())).build()).build();
-//        } catch (Exception e) {
-//            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-//        }
-//        
-//    }
     
+    // ======================================
+    // =          GET requests              =
+    // ======================================
+    
+    /**
+     * It receives the GET requests sent to "/users" and returns
+     * all the users existing in the database, sorted and filtered
+     * with the desired criteria.
+     * @param orderBy the name of the ordering attribute, it can be
+     *        only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.User#OrderBy User.OrderBy}
+     * @param orderType the name of the ordering type, it can be
+     *        only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.User#OrderType User.OrderType}
+     * @return <b>200 OK</b> if there are no errors in the parameters,<br />
+     *         <b>400 Bad request</b> if the parameters are not correct.
+     * @throws Exception
+     */
     @GET
     public Response findAllUsers(@DefaultValue("id") @QueryParam("orderBy") String orderBy,
                                  @DefaultValue("ASC") @QueryParam("orderType") String orderType) throws Exception {
@@ -121,6 +167,11 @@ public class UserResource {
         }
     }
     
+    /**
+     * It receives the GET requests sent to "/users" and returns
+     * the count of all the users existing in the database.
+     * @return count of users
+     */
     @GET
     @Path("/count")
     @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -158,6 +209,10 @@ public class UserResource {
         return new PlayResource(uriInfo, request, playId);
     }
     
+    // ======================================
+    // =          DELETE requests           =
+    // ======================================
+    
     @DELETE
     @Path("/{id}")
     @Secured
@@ -168,27 +223,6 @@ public class UserResource {
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-    }    
-    
-//    @POST
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response authenticateUserJson(String username, String password) {
-//
-//        try {
-//
-//            // Authenticate the user using the credentials provided
-//            authenticate(username, password);
-//
-//            // Issue a token for the user
-//            String token = issueToken(username);
-//
-//            // Return the token on the response
-//            return Response.ok(token).build();
-//
-//        } catch (Exception e) {
-//            return Response.status(Response.Status.UNAUTHORIZED).build();
-//        }      
-//    }    
+    }
 
 }

@@ -31,7 +31,7 @@ public class PlayResource {
     }
     
     // ======================================
-    // =          Business methods          =
+    // =          GET requests              =
     // ======================================
 
     //Application integration
