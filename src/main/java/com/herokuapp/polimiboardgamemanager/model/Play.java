@@ -2,9 +2,10 @@ package com.herokuapp.polimiboardgamemanager.model;
 
 import java.io.Serializable;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -240,16 +241,19 @@ public class Play implements Serializable {
         this.playersInvolved = playersInvolved;
     }
 
-    @XmlElement(name = "link")
-    @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
-    public List<Link> getLinks()
-    {
+    public Map<String, Link> getLinks() {
         String baseUrl = BASE_URL+userCreator.getId()+"/plays/";
-        List<Link> links = new ArrayList<Link>();
-        links.add(Link.fromUri(baseUrl+String.valueOf(id)).rel("self").build());
-        links.add(Link.fromUri(baseUrl).rel("parent").build());
+        Map<String, Link> links = new HashMap<>();
+        links.put("self", Link.fromUri(baseUrl+String.valueOf(id)).rel("self").build());
+        links.put("parent", Link.fromUri(baseUrl).rel("parent").build());
         
         return links;
+    }
+    
+    @XmlElement(name = "link")
+    @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
+    public Collection<Link> getLinksCollection() {
+        return getLinks().values();
     }
 
     // ======================================
