@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
@@ -71,7 +72,7 @@ public class BoardGamesResourceTest extends JerseyTest {
         System.out.println("t3_getBoardGameLinks");        
         final BoardGame board = target().path("boardgames/4").request().get(BoardGame.class);
             
-        List<Link> links = board.getLinks();
+        Collection<Link> links = board.getLinksCollection();
 
         for (Link link: links) {
             System.out.printf(
