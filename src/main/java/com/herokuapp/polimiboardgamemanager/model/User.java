@@ -97,11 +97,17 @@ public class User implements Serializable {
     }
     
     public User(String fullName, String username, String password, boolean powerUser) {
+        this(null, fullName, username, password, powerUser);
+    }
+    
+    public User(Long id, String fullName, String username, String password, boolean powerUser) {
         super();
         this.fullName = fullName;
         this.username = username;
         this.password = password;
         this.powerUser = powerUser;
+        if (id != null)
+            this.id = id;
     }    
     
     // ======================================

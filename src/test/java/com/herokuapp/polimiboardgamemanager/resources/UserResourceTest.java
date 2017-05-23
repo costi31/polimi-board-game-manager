@@ -118,15 +118,15 @@ public class UserResourceTest extends JerseyTest {
         System.out.println(bob);
         
         assertNotNull(bob);
-    }    
+    }
     
     @Test
-    public void t7_removeUser() {
+    public void t7_updateUser() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t7_removeUser");
+        System.out.println("t7_updateUser");
         
         Response loginResponse = login(NEW_USERNAME, NEW_USERNAME);
-        String authenticationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
+        String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
         
         // To get the id of the new user created before I have to scan the full name of the users
         List<User> allUsers = getAllUsers();
@@ -135,11 +135,43 @@ public class UserResourceTest extends JerseyTest {
             if (us.getFullName().equals(NEW_FULLNAME))
                 id = us.getId();
         
+        System.out.println("User to update: "+id);
+        
+        System.out.println("Authorization: "+authorizationBearer);
+        
+        Form form = new Form();
+        form.param("fullName", NEW_FULLNAME+"2");
+        
+        Response response = target(TARGET).path("/"+id).request().
+                header(HttpHeaders.AUTHORIZATION, authorizationBearer).put(Entity.form(form));
+        
+        User updatedUser = target(TARGET).path("/"+id).request().get(User.class);
+        System.out.println("User updated: ");
+        System.out.println(updatedUser);
+        
+        assertEquals(Response.Status.NO_CONTENT, Response.Status.fromStatusCode(response.getStatus()));       
+    }
+    
+    @Test
+    public void t8_removeUser() {
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("t8_removeUser");
+        
+        Response loginResponse = login(NEW_USERNAME, NEW_USERNAME);
+        String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
+        
+        // To get the id of the new user created before I have to scan the full name of the users
+        List<User> allUsers = getAllUsers();
+        long id = 0;
+        for (User us: allUsers)
+            if (us.getFullName().equals(NEW_FULLNAME+"2"))
+                id = us.getId();
+        
         System.out.println("User to delete: "+id);
         
-        System.out.println("Authentication: "+authenticationBearer);
+        System.out.println("Authentication: "+authorizationBearer);
         
-        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authenticationBearer).delete();
+        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
         
         assertEquals(Response.Status.NO_CONTENT, Response.Status.fromStatusCode(response.getStatus()));
     }

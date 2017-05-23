@@ -43,12 +43,20 @@ public class UserDao {
 
     private UserDao() {
     }
-    
+     
     public long createUser(String fullName, String username, String password) throws Exception {
+        return createUser(null, fullName, username, password);
+    }
+    
+    public long createUser(Long id, String fullName, String username, String password) throws Exception {
         try {
             if (!doesUsernameExist(username)) {
                 // If username doesn't exists I create the user
-                User user = new User(fullName, username, password, false);
+                User user;
+                if (id != null && findById(id) != null) // If I specify a valid id I create a user with that id
+                    user = new User(id, fullName, username, password, false);
+                else
+                    user = new User(fullName, username, password, false);
                 MyEntityManager.getInstance().persistEntity(user);
                 return user.getId();
             } else
@@ -56,8 +64,7 @@ public class UserDao {
         } catch (Exception ex) {
             throw new IllegalArgumentException("Bad username: user with desired username already exists!");
         }
-    }
-    
+    }    
     
     public void removeUser(long id, String authorizationBearer) throws Exception {     
         try {
@@ -168,6 +175,47 @@ public class UserDao {
         EntityManager em = MyEntityManager.getInstance().getEm();
         TypedQuery<Long> query = em.createNamedQuery(User.COUNT_ALL, Long.class);
         return query.getSingleResult();
+    }
+
+
+    public void updateUser(Long id, String fullName, String username,
+                           String password, String authorizationBearer) throws Exception {
+                
+        try {
+            
+            String token = authorizationBearer.substring("Bearer".length()).trim();
+            String authenticatedSubject = AuthenticationFilter.validateToken(token);
+            long authenticatedId = Long.parseLong(authenticatedSubject.split(SUBJECT_ID_SEPARATOR)[0]);
+            
+            // Verify if the id of authenticated user corresponds to the id of the user to update
+            if (authenticatedId != id)
+                throw new SecurityException("User unauthorized");
+            
+            EntityManager em = MyEntityManager.getInstance().getEm();
+            User user = (User) MyEntityManager.getInstance().findEntity(User.class, id);
+            em.getTransaction().begin();
+            
+            // updates the user attributes
+            if (fullName != null) 
+                user.setFullName(fullName);
+            if (username != null) {
+                User existingUser = findByUsername(username);
+                // I check if already exists a user with same username and different id
+                if (existingUser == null)
+                    user.setUsername(username);
+                else if (id != existingUser.getId())
+                    throw new IllegalArgumentException("Bad username: user with desired username already exists!");
+            }
+            if (password != null)
+                user.setPassword(password);
+            
+            em.flush();
+            em.getTransaction().commit();            
+            
+        } catch (Exception e) {
+            throw new SecurityException("User unauthorized");
+        }   
+        
     }
         
 //    private Date toDate(LocalDateTime localDateTime) {

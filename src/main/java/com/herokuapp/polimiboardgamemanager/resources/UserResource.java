@@ -9,6 +9,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -207,6 +208,32 @@ public class UserResource {
     @Path("/{userId}/plays/{playId}")
     public PlayResource getPlay(@PathParam("userId") Long userId, @PathParam("playId") Long playId) {
         return new PlayResource(uriInfo, request, playId);
+    }
+    
+    // ======================================
+    // =          PUT requests              =
+    // ======================================    
+    
+    @PUT
+    @Path("/{userId}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response putUser(@FormParam("fullName") String fullName,
+                            @FormParam("username") String username, 
+                            @FormParam("password") String password,
+                            @PathParam("userId") Long userId,
+                            @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
+                
+        try {
+            if (UserDao.getInstance().findById(userId) != null) {
+                UserDao.getInstance().updateUser(userId, fullName, username, password, authorizationBearer);
+                return Response.noContent().build();
+            } else {
+                UserDao.getInstance().createUser(userId, fullName, username, password);
+                return Response.created(uriInfo.getAbsolutePathBuilder().build()).build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }        
     }
     
     // ======================================
