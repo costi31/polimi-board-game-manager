@@ -41,9 +41,9 @@ public class MyEntityManager {
             String username = dbUri.getUserInfo().split(":")[0];
             String password = dbUri.getUserInfo().split(":")[1];
             String dbUrl = "jdbc:mysql://" + dbUri.getHost() + dbUri.getPath();
-            configOverrides.put("hibernate.connection.url", dbUrl);
-            configOverrides.put("hibernate.connection.username", username);
-            configOverrides.put("hibernate.connection.password", password);
+            configOverrides.put("javax.persistence.jdbc.url", dbUrl);
+            configOverrides.put("javax.persistence.jdbc.user", username);
+            configOverrides.put("javax.persistence.jdbc.password", password);
         } catch (URISyntaxException e) {
             LOGGER.fatal(e.getMessage());
         }
