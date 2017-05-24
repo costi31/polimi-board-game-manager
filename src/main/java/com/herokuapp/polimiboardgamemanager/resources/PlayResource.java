@@ -43,7 +43,7 @@ public class PlayResource {
         if (play == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        return Response.ok(play).build();
+        return Response.ok(play).links(play.getLinksArray()).build();
     }
     
 }

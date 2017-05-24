@@ -255,6 +255,11 @@ public class Play implements Serializable {
     public Collection<Link> getLinksCollection() {
         return getLinks().values();
     }
+    
+    public Link[] getLinksArray() {
+        Collection<Link> linksCollection = getLinksCollection();
+        return linksCollection.toArray(new Link[linksCollection.size()]);
+    }    
 
     // ======================================
     // =   Methods hash, equals, toString   =
