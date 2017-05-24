@@ -222,7 +222,7 @@ public class UserResource {
                             @FormParam("password") String password,
                             @PathParam("userId") Long userId,
                             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
-                
+        
         try {
             if (UserDao.getInstance().findById(userId) != null) {
                 UserDao.getInstance().updateUser(userId, fullName, username, password, authorizationBearer);

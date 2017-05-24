@@ -72,6 +72,17 @@ public class MyEntityManager {
         em.getTransaction().commit();
     }
     
+    /**
+     * Merges a generic object in the entity manager, commits and flushes
+     * @param entity Object to merge in the entity manager
+     */    
+    public void mergeEntity(Object entity) {
+        em.getTransaction().begin();
+        em.merge(entity);
+        em.flush();
+        em.getTransaction().commit();
+    }
+    
     public Object findEntity(Class<?> cls, long id) {
         return em.find(cls, id);
     }

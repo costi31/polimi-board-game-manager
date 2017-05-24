@@ -26,6 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
 
 
@@ -43,7 +45,7 @@ import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
     @NamedQuery(name = User.FIND_BY_USERNAME, query = "SELECT u FROM User u WHERE u.username = :username"),
     @NamedQuery(name = User.COUNT_ALL, query = "SELECT COUNT(u) FROM User u")
 })
-public class User implements Serializable {
+public class User implements Identifiable<Long> {
     
     // ======================================
     // =             Constants              =
@@ -71,8 +73,11 @@ public class User implements Serializable {
     // =             Attributes             =
     // ======================================
     
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+    @Id
+    @GenericGenerator(name="assigned_identity_generator", strategy="com.herokuapp.polimiboardgamemanager.model.AssignedIdentityGenerator")
+    @GeneratedValue(generator="assigned_identity_generator", strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique=true, insertable=true)
+    private Long id;
     
     @Column(name = "fullName")
     private String fullName;
@@ -126,14 +131,15 @@ public class User implements Serializable {
     /**
      * @return the id
      */
-    public long getId() {
+    @Override
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
