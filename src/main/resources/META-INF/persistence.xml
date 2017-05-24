@@ -6,7 +6,7 @@
 
     <persistence-unit name="BoardGameManagerPU">
         <description>
-            Persistence unit for Hibernate User Guide
+            Persistence unit for Board Game Manager
         </description>
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
@@ -25,7 +25,7 @@
                       value="#" />
 
             <property name="hibernate.show_sql"
-                      value="true" />
+                      value="false" />
 
             <property name="hibernate.hbm2ddl.auto"
                       value="update" />
