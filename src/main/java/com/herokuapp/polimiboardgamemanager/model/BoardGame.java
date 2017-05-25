@@ -135,7 +135,7 @@ public class BoardGame implements Serializable {
     }
     
     @XmlElement(name = "link")
-    @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
+    @XmlJavaTypeAdapter(LinkAdapter.class)
     public Collection<Link> getLinksCollection() {
         return getLinks().values();
     }
