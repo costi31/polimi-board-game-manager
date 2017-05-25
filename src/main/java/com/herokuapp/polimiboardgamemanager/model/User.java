@@ -45,7 +45,7 @@ import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
     @NamedQuery(name = User.FIND_BY_USERNAME, query = "SELECT u FROM User u WHERE u.username = :username"),
     @NamedQuery(name = User.COUNT_ALL, query = "SELECT COUNT(u) FROM User u")
 })
-public class User implements Identifiable<Long> {
+public class User implements Identifiable<Long>, Serializable {
     
     // ======================================
     // =             Constants              =
@@ -63,10 +63,8 @@ public class User implements Identifiable<Long> {
     public static final String FIND_BY_LOGIN_PASSWORD = "User.findByLoginAndPassword";
     public static final String FIND_BY_USERNAME = "User.findByUsername";
 
-    @Transient
     private static final long serialVersionUID = -4504381318096463953L;
     
-    @Transient
     private static final String BASE_URL = "https://polimi-board-game-manager.herokuapp.com/users/"; 
     
     // ======================================

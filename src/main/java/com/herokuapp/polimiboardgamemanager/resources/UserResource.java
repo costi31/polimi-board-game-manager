@@ -65,7 +65,6 @@ public class UserResource {
      */
     @POST
     @Path("/login")
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response authenticateUser(@FormParam("username") String username, 
                                      @FormParam("password") String password) {
@@ -79,10 +78,11 @@ public class UserResource {
             String token = UserDao.getInstance().issueToken(userId, username, uriInfo);
 
             // Return the token on the response
-            return Response.ok().header(HttpHeaders.AUTHORIZATION,  "Bearer " + token).build();
+            return Response.ok("User authenticated with authorization: Bearer "+token).
+                    header(HttpHeaders.AUTHORIZATION,  "Bearer " + token).build();
 
         } catch (Exception e) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            return Response.status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_XML).entity(e.getMessage()).build();
         }      
     }
     
