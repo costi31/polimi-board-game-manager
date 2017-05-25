@@ -58,7 +58,7 @@ public class UserDao {
                 else
                     user = new User(fullName, username, password, false);
                 
-                MyEntityManager.getInstance().mergeEntity(user);
+                user = (User) MyEntityManager.getInstance().mergeEntity(user);
                 return user.getId();
             } else
                 throw new IllegalArgumentException("Bad username: user with desired username already exists!");
@@ -140,8 +140,9 @@ public class UserDao {
     
     public boolean doesUsernameExist(String username) {
         try {
-            findByUsername(username);
-            return true;
+            if (findByUsername(username) != null)
+                return true;
+            return false;
         } catch (Exception ex) {
             return false;
         }
