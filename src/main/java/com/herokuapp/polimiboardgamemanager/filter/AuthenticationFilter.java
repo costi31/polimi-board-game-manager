@@ -21,6 +21,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
+	
+    /**
+     * Separator between user id and username in the subject field of the token
+     */
+    public static final String SUBJECT_ID_SEPARATOR = "@";  	
     
     public static final Key SIGNING_KEY = new SecretKeySpec(DatatypeConverter.parseBase64Binary(
             System.getenv("SIGNING_KEY")
@@ -30,6 +35,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         // Check if it was issued by the server and if it's not expired
         // Throw an Exception if the token is invalid
         return Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(token).getBody().getSubject();
+    }
+    
+    public static long getAuthIdFromBearer(String authorizationBearer) throws Exception {
+        String token = authorizationBearer.substring("Bearer".length()).trim();
+        String authenticatedSubject = AuthenticationFilter.validateToken(token);
+        return Long.parseLong(authenticatedSubject.split(SUBJECT_ID_SEPARATOR)[0]);
     }
 
     @Override
