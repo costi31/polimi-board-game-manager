@@ -27,6 +27,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.GenericGenerator;
+
 
 /**
  * Entity that represents a "play" of a boardgame, started by an user
@@ -41,7 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     @NamedQuery(name = Play.FIND_BY_USER, query = "SELECT p FROM Play p WHERE p.userCreator = :userCreator"),
     @NamedQuery(name = Play.COUNT_ALL, query = "SELECT COUNT(p) FROM Play p")
 })
-public class Play implements Serializable {
+public class Play implements Identifiable<Long>, Serializable {
     
     // ======================================
     // =             Constants              =
@@ -66,8 +68,11 @@ public class Play implements Serializable {
     // =             Attributes             =
     // ======================================
     
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+    @Id
+    @GenericGenerator(name="assigned_identity_generator", strategy="com.herokuapp.polimiboardgamemanager.model.AssignedIdentityGenerator")
+    @GeneratedValue(generator="assigned_identity_generator", strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique=true, insertable=true)
+    private Long id;
     
     @ManyToOne(optional=false) 
     @JoinColumn(name="userCreatorId", nullable=false, updatable=false)
@@ -98,24 +103,34 @@ public class Play implements Serializable {
         super();
     }
     
+    public Play(Long id, User userCreator, BoardGame boardGame, Calendar date) {
+    	this(id, userCreator, boardGame, date, 1, false, null, null);
+    }
+    
     public Play(User userCreator, BoardGame boardGame, Calendar date) {
-        this(userCreator, boardGame, date, 1, false, null, null);
+    	this(null, userCreator, boardGame, date, 1, false, null, null);
     }
     
     public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved) {
-        this(userCreator, boardGame, date, playersInvolved, false, null, null);
+    	this(null, userCreator, boardGame, date, playersInvolved, false, null, null);
     }
     
     public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed) {
-        this(userCreator, boardGame, date, playersInvolved, completed, null, null);
+    	this(null, userCreator, boardGame, date, playersInvolved, completed, null, null);
     }
     
     public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed, Time timeToComplete) {
-        this(userCreator, boardGame, date, playersInvolved, completed, timeToComplete, null);
+    	this(null, userCreator, boardGame, date, playersInvolved, completed, timeToComplete, null);
     }
     
     public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed, Time timeToComplete, User userWinner) {
+    	this(null, userCreator, boardGame, date, playersInvolved, completed, timeToComplete, null);
+    }
+    
+    public Play(Long id, User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed, Time timeToComplete, User userWinner) {
         super();
+        if (id != null)
+        	this.id = id;
         this.userCreator = userCreator;
         this.boardGame = boardGame;
         this.date = date;
@@ -132,14 +147,14 @@ public class Play implements Serializable {
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     
