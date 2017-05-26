@@ -59,7 +59,7 @@ public class PlayDao {
         }        
     }  
     
-    public long updatePlay(long id, Play play, String authorizationBearer) throws Exception {
+    public void updatePlay(long id, Play play, String authorizationBearer) throws Exception {
         try {
         	long authenticatedId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
             
@@ -70,8 +70,7 @@ public class PlayDao {
             if (id != play.getId())
             	throw new IllegalArgumentException("Wrong id of play!");
             
-            play = (Play)MyEntityManager.getInstance().mergeEntity(play);
-            return play.getId();
+            MyEntityManager.getInstance().mergeEntity(play);
         } catch (Exception e) {
             throw new SecurityException(USER_UNAUTHORIZED_MSG);
         }        
