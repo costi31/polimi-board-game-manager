@@ -146,22 +146,27 @@ public class UserResource {
      * It receives the GET requests sent to "/users" and returns
      * all the users existing in the database, sorted and filtered
      * with the desired criteria.
-     * @param orderBy the name of the ordering attribute, it can be
+     * @param filter is a list of couples "filterName@filterValue", where filterName can be
+     *        only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.User#FilterBy User.FilterBy}
+     *        and filterValue is the string representation of the desired value for the user
+     *        attribute to filter 
+     * @param order is a list of couples "orderBy@orderMode", where orderBy can be
      *        only one of
      *        {@link com.herokuapp.polimiboardgamemanager.model.User#OrderBy User.OrderBy}
-     * @param orderType the name of the ordering type, it can be
-     *        only one of
-     *        {@link com.herokuapp.polimiboardgamemanager.model.User#OrderType User.OrderType}
+     *        and orderMode can be only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.MyEntityManager#OrderMode MyEntityManager.OrderMode}
      * @return <b>200 OK</b> if there are no errors in the parameters,<br />
      *         <b>400 Bad request</b> if the parameters are not correct.
-     * @throws Exception
      */
     @GET
-    public Response findAllUsers(@DefaultValue("id") @QueryParam("orderBy") String orderBy,
-                                 @DefaultValue("ASC") @QueryParam("orderType") String orderType) throws Exception {
+    public Response findAllUsers(@QueryParam("filter") final List<String> filter,
+    							 @QueryParam("order") final List<String> order) {
         
         try {
-            GenericEntity<List<User>> list = new GenericEntity<List<User>>(UserDao.getInstance().findAllUsers(orderBy, orderType)){};
+            GenericEntity<List<User>> list = new GenericEntity<List<User>>(
+            		UserDao.getInstance().findAllUsers(filter, order)){};
+            		
             return Response.ok(list).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();

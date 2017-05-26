@@ -2,12 +2,21 @@ package com.herokuapp.polimiboardgamemanager.dao;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +27,15 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class MyEntityManager {
+	
+	/**
+	 * Split character between a search criteria (filter name or order by) and its value
+	 */
+	public static final String SEARCH_CRITERIA_SPLIT = "@";
+	
+    public enum OrderMode {
+        ASC, DESC
+    }
     
     private static MyEntityManager instance = null;
     
@@ -89,11 +107,91 @@ public class MyEntityManager {
         return em.find(cls, id);
     }
     
+    public <T extends Object, E1 extends Enum<E1>, E2 extends Enum<E2>>
+    	List<T> findAllEntities(Class<T> resultClass,
+							    List<String> filtersString,
+							    List<String> ordersString,
+							    Class<E1> allowedFilters,
+							    Class<E2> allowedOrders) throws Exception {
+    	
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(resultClass);
+        Root<T> entity = cq.from(resultClass);
+        cq.select(entity);
+        
+        // Map filters and orders couples
+        // it throws exception if the filters or the orders criteria are invalid
+        Map<E1, String> filtersMap = mapFilters(filtersString, allowedFilters);
+        Map<E2, OrderMode> ordersMap = mapOrders(ordersString, allowedOrders);
+        
+        // Now I set all the filters
+        List<Predicate> filtersPredicates = new ArrayList<>();
+        
+        for (Map.Entry<E1, String> entry : filtersMap.entrySet()) {
+            E1 filterBy = entry.getKey();
+            String filterVal = entry.getValue();
+            
+            filtersPredicates.add(cb.equal(entity.get(filterBy.toString()).as(String.class),
+            							   filterVal));
+        }    
+        
+        cq.where(filtersPredicates.toArray(new Predicate[filtersPredicates.size()]));
+        
+        // Now I add all the desired orders criteria
+        List<Order> orderCriteria = new ArrayList<>();
+        Expression exp;
+        
+        for (Map.Entry<E2, OrderMode> entry : ordersMap.entrySet()) {
+            E2 orderBy = entry.getKey();
+            OrderMode orderMode = entry.getValue();
+            
+            exp = entity.get(orderBy.toString());
+            orderCriteria.add(
+                              (orderMode.equals(OrderMode.DESC)) ? cb.desc(exp) : cb.asc(exp)
+                             );
+        }        
+        
+        // If id order was not added I added as an extra criterium
+        if (! ordersMap.containsKey("id")) {
+	        exp = entity.get("id");
+	        orderCriteria.add(cb.asc(exp));
+        }
+        
+        cq.orderBy(orderCriteria);
+        
+        TypedQuery<T> q = em.createQuery(cq);
+        return q.getResultList();
+    }
+    
     public void removeEntity(Class<?> cls, long id) {
         em.getTransaction().begin();        
         em.remove(em.getReference(cls, id));
         em.flush();
         em.getTransaction().commit();
+    }
+    
+    private <E extends Enum<E>> Map<E, String> mapFilters(List<String> filtersString, Class<E> allowedFilters) throws Exception {
+        Map<E, String> filtersMap = new HashMap<>();
+    	
+    	for (String filter: filtersString) {
+    		String[] filterCouple = filter.split(SEARCH_CRITERIA_SPLIT);
+    		E filterName = Enum.valueOf(allowedFilters, filterCouple[0]);
+    		filtersMap.put(filterName, filterCouple[1]);
+    	}
+    	
+    	return filtersMap;	
+    }
+    
+    private <E extends Enum<E>> Map<E, OrderMode> mapOrders(List<String> ordersString, Class<E> allowedOrders) throws Exception {
+        Map<E, OrderMode> ordersMap = new HashMap<>();
+    	
+    	for (String order: ordersString) {
+    		String[] orderCouple = order.split(SEARCH_CRITERIA_SPLIT);
+    		E orderBy = Enum.valueOf(allowedOrders, orderCouple[0]);
+    		ordersMap.put(orderBy, OrderMode.valueOf(orderCouple[1].toUpperCase()));
+    	}
+    	
+    	return ordersMap;	    	
     }
 
 }

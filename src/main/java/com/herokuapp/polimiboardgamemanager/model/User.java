@@ -54,8 +54,8 @@ public class User implements Identifiable<Long>, Serializable {
         fullName, id
     }
     
-    public enum OrderType {
-        ASC, DESC
+    public enum FilterBy {
+    	fullName, powerUser
     }
 
     public static final String COUNT_ALL = "User.countAll";

@@ -144,37 +144,42 @@ public class UserDao {
         }
     }
     
-    public List<User> findAllUsers(String orderByString, String orderTypeString) throws Exception {
-        EntityManager em = MyEntityManager.getInstance().getEm();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<User> cq = cb.createQuery(User.class);
-        Root<User> us = cq.from(User.class);
-        cq.select(us);
-        
-        // Get the order criteria
-        // it throws exception if strings don't correspond to allowed enum values
-        User.OrderBy orderBy = User.OrderBy.valueOf(orderByString);
-        User.OrderType orderType = User.OrderType.valueOf(orderTypeString.toUpperCase());
-        
-        List<Order> orderCriteria = new ArrayList<>();
-        Expression exp;
-        if (orderBy.equals(User.OrderBy.fullName)) {
-            exp = us.get(orderBy.toString());
-            orderCriteria.add(
-                              (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
-                             );
-        }
-        
-        exp = us.get(User.OrderBy.id.toString());
-        orderCriteria.add(
-                          (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
-                         );
-        
-        cq.orderBy(orderCriteria);
-        
-        TypedQuery<User> q = em.createQuery(cq);
-        return q.getResultList();
-    }
+//    public List<User> findAllUsers(String orderByString, String orderTypeString) throws Exception {
+//        EntityManager em = MyEntityManager.getInstance().getEm();
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<User> cq = cb.createQuery(User.class);
+//        Root<User> us = cq.from(User.class);
+//        cq.select(us);
+//        
+//        // Get the order criteria
+//        // it throws exception if strings don't correspond to allowed enum values
+//        User.OrderBy orderBy = User.OrderBy.valueOf(orderByString);
+//        User.OrderType orderType = User.OrderType.valueOf(orderTypeString.toUpperCase());
+//        
+//        List<Order> orderCriteria = new ArrayList<>();
+//        Expression exp;
+//        if (orderBy.equals(User.OrderBy.fullName)) {
+//            exp = us.get(orderBy.toString());
+//            orderCriteria.add(
+//                              (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
+//                             );
+//        }
+//        
+//        exp = us.get(User.OrderBy.id.toString());
+//        orderCriteria.add(
+//                          (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
+//                         );
+//        
+//        cq.orderBy(orderCriteria);
+//        
+//        TypedQuery<User> q = em.createQuery(cq);
+//        return q.getResultList();
+//    }
+    
+    public List<User> findAllUsers(List<String> filtersString, List<String> ordersString) throws Exception {
+         return MyEntityManager.getInstance().findAllEntities(User.class,
+        		 filtersString, ordersString, User.FilterBy.class, User.OrderBy.class);
+    }    
         
     public long authenticate(String username, String password) throws Exception {
         EntityManager em = MyEntityManager.getInstance().getEm();
