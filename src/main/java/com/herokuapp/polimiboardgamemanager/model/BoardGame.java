@@ -43,8 +43,8 @@ public class BoardGame implements Identifiable<Long>, Serializable {
         name, id
     }
     
-    public enum OrderType {
-        ASC, DESC
+    public enum FilterBy {
+        name
     }
 
     public static final String FIND_BY_NAME = "BoardGame.findByName";

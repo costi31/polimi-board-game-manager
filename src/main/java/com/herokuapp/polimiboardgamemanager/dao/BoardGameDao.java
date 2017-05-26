@@ -1,20 +1,11 @@
 package com.herokuapp.polimiboardgamemanager.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.security.sasl.AuthorizeCallback;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
-import com.herokuapp.polimiboardgamemanager.model.Play;
 
 /**
  * Singleton DAO class to access and manage a board game
@@ -129,36 +120,9 @@ public class BoardGameDao {
         return count;
     }
       
-    public List<BoardGame> findAllBoardGames(String orderByString, String orderTypeString) throws Exception {
-        EntityManager em = MyEntityManager.getInstance().getEm();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<BoardGame> cq = cb.createQuery(BoardGame.class);
-        Root<BoardGame> us = cq.from(BoardGame.class);
-        cq.select(us);
-        
-        // Get the order criteria
-        // it throws exception if strings don't correspond to allowed enum values
-        BoardGame.OrderBy orderBy = BoardGame.OrderBy.valueOf(orderByString);
-        BoardGame.OrderType orderType = BoardGame.OrderType.valueOf(orderTypeString.toUpperCase());
-        
-        List<Order> orderCriteria = new ArrayList<Order>();
-        Expression exp;
-        if (orderBy.equals(BoardGame.OrderBy.name)) {
-            exp = us.get(orderBy.toString());
-            orderCriteria.add(
-                              (orderType.equals(BoardGame.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
-                             );
-        }
-        
-        exp = us.get(BoardGame.OrderBy.id.toString());
-        orderCriteria.add(
-                          (orderType.equals(BoardGame.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
-                         );
-        
-        cq.orderBy(orderCriteria);
-        
-        TypedQuery<BoardGame> q = em.createQuery(cq);
-        return q.getResultList();
-    }
+    public List<BoardGame> findAllBoardGames(List<String> filtersString, List<String> ordersString) throws Exception {
+        return MyEntityManager.getInstance().findAllEntities(BoardGame.class,
+       		 filtersString, ordersString, BoardGame.FilterBy.class, BoardGame.OrderBy.class);
+   }   
 
 }

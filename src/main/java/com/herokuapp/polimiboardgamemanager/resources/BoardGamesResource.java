@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -79,11 +78,12 @@ public class BoardGamesResource {
     // ======================================
 
     @GET
-    public Response getBoards(@DefaultValue("id") @QueryParam("orderBy") String orderBy,
-                              @DefaultValue("ASC") @QueryParam("orderType") String orderType) {
+    public Response findAllBoardGames(@QueryParam("filter") final List<String> filter,
+    								  @QueryParam("order") final List<String> order) {
 
         try {
-            GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(BoardGameDao.getInstance().findAllBoardGames(orderBy, orderType)){};
+            GenericEntity<List<BoardGame>> list = new GenericEntity<List<BoardGame>>(
+            		BoardGameDao.getInstance().findAllBoardGames(filter, order)){};
             return Response.ok(list).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
