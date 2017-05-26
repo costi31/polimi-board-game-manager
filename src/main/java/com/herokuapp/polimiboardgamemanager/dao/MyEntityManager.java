@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -131,7 +132,12 @@ public class MyEntityManager {
             E1 filterBy = entry.getKey();
             String filterVal = entry.getValue();
             
-            filtersPredicates.add(cb.equal(entity.get(filterBy.toString()).as(String.class),
+            Path<T> fieldPath = entity;
+            for (String filterByString : filterBy.toString().split("_")) {
+           		fieldPath = fieldPath.get(filterByString);
+            }
+            
+            filtersPredicates.add(cb.equal(fieldPath.as(String.class),
             							   filterVal));
         }    
         
@@ -139,7 +145,7 @@ public class MyEntityManager {
         
         // Now I add all the desired orders criteria
         List<Order> orderCriteria = new ArrayList<>();
-        Expression exp;
+        Expression<Path<T>> exp;
         
         for (Map.Entry<E2, OrderMode> entry : ordersMap.entrySet()) {
             E2 orderBy = entry.getKey();
