@@ -1,5 +1,6 @@
 package com.herokuapp.polimiboardgamemanager.resources;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -205,11 +206,6 @@ public class UserResource {
         }        
     }
     
-    @Path("/{userId}/plays/{playId}")
-    public PlayResource getPlay(@PathParam("userId") Long userId, @PathParam("playId") Long playId) {
-        return new PlayResource(uriInfo, request, playId);
-    }
-    
     // ======================================
     // =          PUT requests              =
     // ======================================    
@@ -246,10 +242,20 @@ public class UserResource {
     public Response remove(@PathParam("id") Long id, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
         try {
             UserDao.getInstance().removeUser(id, authorizationBearer);
-            return Response.noContent().build();
+            return Response.noContent().link(uriInfo.getAbsolutePathBuilder().path("../").build(),
+            								 "parent").build();
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
     }
+    
+    // ======================================
+    // =        Other play requests         =
+    // ======================================      
+    
+    @Path("/{userId}/plays/{playId}")
+    public PlayResource getPlay(@PathParam("userId") Long userId, @PathParam("playId") Long playId) {
+        return new PlayResource(uriInfo, request, playId);
+    }    
 
 }
