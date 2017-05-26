@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,7 +13,6 @@ import javax.persistence.criteria.Root;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
-import com.herokuapp.polimiboardgamemanager.model.User;
 
 /**
  * Singleton DAO class to access and manage a board game
@@ -60,9 +57,7 @@ public class BoardGameDao {
      */
     public long createBoardGame(BoardGame board, String authorizationBearer) throws Exception  {
         try {
-            String token = authorizationBearer.substring("Bearer".length()).trim();
-            String authenticatedSubject = AuthenticationFilter.validateToken(token);
-            long authenticatedUserId = Long.parseLong(authenticatedSubject.split(UserDao.SUBJECT_ID_SEPARATOR)[0]);
+        	long authenticatedUserId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
             
             // Verify if the authenticated user is a power user
             if (! UserDao.getInstance().findById(authenticatedUserId).isPowerUser())

@@ -72,9 +72,7 @@ public class UserDao {
 
         try {
 
-            String token = authorizationBearer.substring("Bearer".length()).trim();
-            String authenticatedSubject = AuthenticationFilter.validateToken(token);
-            long authenticatedId = Long.parseLong(authenticatedSubject.split(SUBJECT_ID_SEPARATOR)[0]);
+        	long authenticatedId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
 
             // Verify if the id of authenticated user corresponds to the id of the user to update
             if (authenticatedId != id)
@@ -111,9 +109,7 @@ public class UserDao {
     
     public void removeUser(long id, String authorizationBearer) throws Exception {     
         try {
-            String token = authorizationBearer.substring("Bearer".length()).trim();
-            String authenticatedSubject = AuthenticationFilter.validateToken(token);
-            long authenticatedId = Long.parseLong(authenticatedSubject.split(SUBJECT_ID_SEPARATOR)[0]);
+        	long authenticatedId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
             
             // Verify if the id of authenticated user corresponds to the id of the user to remove
             if (authenticatedId != id)
@@ -160,7 +156,7 @@ public class UserDao {
         User.OrderBy orderBy = User.OrderBy.valueOf(orderByString);
         User.OrderType orderType = User.OrderType.valueOf(orderTypeString.toUpperCase());
         
-        List<Order> orderCriteria = new ArrayList<Order>();
+        List<Order> orderCriteria = new ArrayList<>();
         Expression exp;
         if (orderBy.equals(User.OrderBy.fullName)) {
             exp = us.get(orderBy.toString());
@@ -199,15 +195,13 @@ public class UserDao {
         long t = date.getTimeInMillis();
         Date expirationDate = new Date(t + (60 * oneMinuteInMillis));
         
-        String jwtToken = Jwts.builder()
+        return Jwts.builder()
                             .setSubject(userId+SUBJECT_ID_SEPARATOR+username)
                             .setIssuer(uriInfo.getAbsolutePath().toString())
                             .setIssuedAt(new Date())
                             .setExpiration(expirationDate)
                             .signWith(SignatureAlgorithm.HS512, AuthenticationFilter.SIGNING_KEY)
                             .compact();
-        
-        return jwtToken;
 
     }
 

@@ -16,19 +16,14 @@ import org.apache.logging.log4j.Logger;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.Play;
-import com.herokuapp.polimiboardgamemanager.model.User;
 
 public class PlayDao {
     
     private static final Logger LOGGER = LogManager.getLogger(PlayDao.class);
+    private static final String USER_UNAUTHORIZED_MSG = "User unauthorized to do this operation!";
     
     private static PlayDao instance = null;
-    
-    /**
-     * Separator between user id and username in the subject field of the token
-     */
-    public static final String SUBJECT_ID_SEPARATOR = "@";    
-    
+        
     /**
      * Gets the instance of BoardGameDao
      * @return instance of BoardGameDao
@@ -45,19 +40,35 @@ public class PlayDao {
     
     public long createPlay(Play play, String authorizationBearer) throws Exception {
         try {
-            String token = authorizationBearer.substring("Bearer".length()).trim();
-            String authenticatedSubject = AuthenticationFilter.validateToken(token);
-            long authenticatedId = Long.parseLong(authenticatedSubject.split(SUBJECT_ID_SEPARATOR)[0]);
+        	long authenticatedId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
             
-            // Verify if the id of authenticated user corresponds to the id of the user to remove
+            // Verify if the id of authenticated user corresponds to the id of the user creator of play
             if (authenticatedId != play.getUserCreator().getId())
-                throw new SecurityException("User unauthorized");
+                throw new SecurityException(USER_UNAUTHORIZED_MSG);
             
             MyEntityManager.getInstance().persistEntity(play);
             return play.getId();
         } catch (Exception e) {
-            throw new SecurityException("User unauthorized");
+            throw new SecurityException(USER_UNAUTHORIZED_MSG);
         }        
+    }
+    
+    public void removePlay(long id, String authorizationBearer) throws Exception {     
+        try {
+            long authenticatedId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
+            
+            Play play = findById(id);
+            if (play == null)
+            	throw new IllegalArgumentException("The play to remove doesn't exist!");
+            
+            // Verify if the id of authenticated user corresponds to the id of the user creator of play
+            if (authenticatedId != play.getUserCreator().getId())
+                throw new SecurityException(USER_UNAUTHORIZED_MSG);
+            
+            MyEntityManager.getInstance().removeEntity(Play.class, id);
+        } catch (Exception e) {
+            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+        }
     }
     
     public Play findById(long id) {
@@ -78,7 +89,7 @@ public class PlayDao {
         Play.OrderBy orderBy = Play.OrderBy.valueOf(orderByString);
         Play.OrderType orderType = Play.OrderType.valueOf(orderTypeString.toUpperCase());
         
-        List<Order> orderCriteria = new ArrayList<Order>();
+        List<Order> orderCriteria = new ArrayList<>();
         Expression exp;
         if (! orderBy.equals(Play.OrderBy.id)) {
             exp = pl.get(orderBy.toString());
