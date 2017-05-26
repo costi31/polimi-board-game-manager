@@ -1,6 +1,5 @@
 package com.herokuapp.polimiboardgamemanager.resources;
 
-import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
