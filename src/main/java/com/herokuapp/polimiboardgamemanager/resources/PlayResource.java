@@ -58,7 +58,7 @@ public class PlayResource {
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Secured
-    public Response putUser(Play play,
+    public Response putPlay(Play play,
                             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
         
         try {
