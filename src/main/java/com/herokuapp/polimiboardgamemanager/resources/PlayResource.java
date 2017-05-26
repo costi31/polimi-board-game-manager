@@ -42,7 +42,6 @@ public class PlayResource {
 
     //Application integration
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
     public Response getPlay() {
         Play play = PlayDao.getInstance().findById(id);
 
