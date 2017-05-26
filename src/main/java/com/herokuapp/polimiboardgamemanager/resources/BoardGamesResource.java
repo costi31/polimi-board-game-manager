@@ -98,9 +98,12 @@ public class BoardGamesResource {
         return BoardGameDao.getInstance().getBoardGamesCount();
     }
     
+    // ======================================
+    // =     Single board game requests     =
+    // ======================================       
 
-    @Path("/{board_id}")
-    public BoardGameResource getBoard(@PathParam("board_id") Long id) {
+    @Path("/{id}")
+    public BoardGameResource getBoard(@PathParam("id") Long id) {
         return new BoardGameResource(uriInfo, request, id);
     }
 

@@ -10,9 +10,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
+import javax.security.sasl.AuthorizeCallback;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
+import com.herokuapp.polimiboardgamemanager.model.Play;
 
 /**
  * Singleton DAO class to access and manage a board game
@@ -20,6 +22,9 @@ import com.herokuapp.polimiboardgamemanager.model.BoardGame;
  *
  */
 public class BoardGameDao {
+	
+    private static final String USER_UNAUTHORIZED_MSG = "User unauthorized to do this operation!";
+    private static final String BOARDGAME_ID_EXISTS_MSG = "A board game with desired id already exists!";	
     
     private static BoardGameDao instance = null;
     
@@ -38,17 +43,12 @@ public class BoardGameDao {
     }
     
     /**
-     * Gets a board game by its id
+     * Find a board game by its id
      * @param id of the board game
      * @return BoardGame object corresponding to that id
      */
-    public BoardGame getBoardGame(long id) {
-        try {
-            BoardGame board = MyEntityManager.getInstance().getEm().find(BoardGame.class, id);
-            return board;
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Get: BoardGame with " + id +  " not found");
-        }
+    public BoardGame findById(long id) {
+        return (BoardGame) MyEntityManager.getInstance().findEntity(BoardGame.class, id);
     }
     
     /**
@@ -61,13 +61,17 @@ public class BoardGameDao {
             
             // Verify if the authenticated user is a power user
             if (! UserDao.getInstance().findById(authenticatedUserId).isPowerUser())
-                throw new SecurityException("User unauthorized");
+                throw new SecurityException(USER_UNAUTHORIZED_MSG);
             
-            MyEntityManager.getInstance().persistEntity(board);
+            Long id = board.getId();
             
+            if (id != null && findById(id) != null) // if already exists a board game with specified id
+            	throw new IllegalArgumentException(BOARDGAME_ID_EXISTS_MSG);            
+            
+            board = (BoardGame)MyEntityManager.getInstance().mergeEntity(board);
             return board.getId();
         } catch (Exception e) {
-            throw new SecurityException("User unauthorized");
+            throw new SecurityException(USER_UNAUTHORIZED_MSG);
         }        
     }
     
@@ -80,24 +84,39 @@ public class BoardGameDao {
      * Updates a board game
      * @param board the updated version of the desired board game
      */
-    public void updateBoardGame(BoardGame board) {
-        
+    public void updateBoardGame(long id, BoardGame board, String authorizationBearer) throws Exception {
+        try {
+        	long authenticatedUserId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
+            
+            // Verify if the user is a power user
+            if (! UserDao.getInstance().findById(authenticatedUserId).isPowerUser())
+                throw new SecurityException(USER_UNAUTHORIZED_MSG);        	
+            
+            if (id != board.getId())
+            	throw new IllegalArgumentException("Wrong id of board game!");
+            
+            MyEntityManager.getInstance().mergeEntity(board);
+        } catch (Exception e) {
+            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+        }       
     }
     
-    /**
-     * Deletes a board game
-     * @param board the BoardGame to delete
-     */
-    public void deleteBoardGame(BoardGame board) {
-        
-    }
-    
-    /**
-     * Deletes a board game given its id
-     * @param id the id of the board game to delete
-     */
-    public void deleteBoardGame(long id) {
-        
+    public void removeBoardGame(long id, String authorizationBearer) throws Exception {     
+        try {
+            long authenticatedId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
+            
+            BoardGame board = findById(id);
+            if (board == null)
+            	throw new IllegalArgumentException("The board game to remove doesn't exist!");
+            
+            // Verify if the user is a power user
+            if (! UserDao.getInstance().findById(authenticatedId).isPowerUser())
+                throw new SecurityException(USER_UNAUTHORIZED_MSG);      
+            
+            MyEntityManager.getInstance().removeEntity(BoardGame.class, id);
+        } catch (Exception e) {
+            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+        }
     }
     
     /**

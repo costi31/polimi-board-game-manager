@@ -22,6 +22,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.hibernate.annotations.GenericGenerator;
  
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -31,7 +33,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     @NamedQuery(name = BoardGame.FIND_BY_NAME, query = "SELECT b FROM BoardGame b WHERE b.name = :name"),
     @NamedQuery(name = BoardGame.COUNT_ALL, query = "SELECT COUNT(b) FROM BoardGame b")
 })
-public class BoardGame implements Serializable {
+public class BoardGame implements Identifiable<Long>, Serializable {
     
     // ======================================
     // =             Constants              =
@@ -56,8 +58,11 @@ public class BoardGame implements Serializable {
     // =             Attributes             =
     // ======================================
     
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+    @Id
+    @GenericGenerator(name="assigned_identity_generator", strategy="com.herokuapp.polimiboardgamemanager.model.AssignedIdentityGenerator")
+    @GeneratedValue(generator="assigned_identity_generator", strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique=true, insertable=true)
+    private Long id;
     
     @Column(name = "name")
     private String name;
@@ -74,10 +79,17 @@ public class BoardGame implements Serializable {
     
     
     public BoardGame(){
+    	super();
     }
        
     public BoardGame(String name, String designers, String cover) {
+        this(null, name, designers, cover);
+    }
+    
+    public BoardGame(Long id, String name, String designers, String cover) {
         super();
+        if (id != null)
+        	this.id = id;
         this.name = name;
         this.designers = designers;
         this.cover = cover;
@@ -87,11 +99,12 @@ public class BoardGame implements Serializable {
     // =          Getters & Setters         =
     // ======================================
     
-    public long getId() {
+    @Override
+    public Long getId() {
         return id;
     }
     
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -139,5 +152,10 @@ public class BoardGame implements Serializable {
     public Collection<Link> getLinksCollection() {
         return getLinks().values();
     }
+    
+    public Link[] getLinksArray() {
+        Collection<Link> linksCollection = getLinksCollection();
+        return linksCollection.toArray(new Link[linksCollection.size()]);
+    }    
 
 }
