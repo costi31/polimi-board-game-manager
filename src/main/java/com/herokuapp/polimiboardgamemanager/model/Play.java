@@ -53,8 +53,8 @@ public class Play implements Identifiable<Long>, Serializable {
         id, boardGame, date, completed, timeToComplete
     }
     
-    public enum OrderType {
-        ASC, DESC
+    public enum FilterBy {
+    	userCreator_id, boardGame_id, date, completed, timeToComplete
     }
 
     public static final String COUNT_ALL = "Play.countAll";

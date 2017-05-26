@@ -199,13 +199,14 @@ public class UserResource {
     @GET
     @Path("/{userId}/plays")
     public Response getPlaysByUser(@PathParam("userId") Long userId,
-                                   @DefaultValue("id") @QueryParam("orderBy") String orderBy,
-                                   @DefaultValue("ASC") @QueryParam("orderType") String orderType) throws Exception {
+    							   @QueryParam("filter") final List<String> filter,
+    							   @QueryParam("order") final List<String> order) {
         
         try {
-            GenericEntity<List<Play>> list = new GenericEntity<List<Play>>(PlayDao.getInstance().findPlaysByUser(userId, orderBy, orderType)){};
+            GenericEntity<List<Play>> list = new GenericEntity<List<Play>>(PlayDao.getInstance().findPlaysByUser(userId, filter, order)){};
             return Response.ok(list).build();
         } catch (Exception e) {
+        	e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).build();
         }        
     }
