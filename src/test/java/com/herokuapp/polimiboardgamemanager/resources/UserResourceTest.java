@@ -173,6 +173,8 @@ public class UserResourceTest extends JerseyTest {
         
         Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
         
+        System.out.println("Response link: "+response.getLink("parent"));
+        
         assertEquals(Response.Status.NO_CONTENT, Response.Status.fromStatusCode(response.getStatus()));
     }
     
