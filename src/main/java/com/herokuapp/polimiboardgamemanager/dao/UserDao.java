@@ -131,13 +131,10 @@ public class UserDao {
     
     public boolean doesUsernameExist(String username) {
         try {
-            if (findByUsername(username) != null)
-                return true;
+        	return (findByUsername(username) != null);
         } catch (Exception e) {
             return false;
         }
-        
-        return false;
     }
         
     public List<User> findAllUsers(List<String> filtersString, List<String> ordersString) throws Exception {
