@@ -1,17 +1,11 @@
 package com.herokuapp.polimiboardgamemanager.dao;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
 import javax.ws.rs.core.UriInfo;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
@@ -22,6 +16,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 public class UserDao {
+	
+	private static final String USER_UNAUTHORIZED_MSG = "User unauthorized to do this operation!";
+	private static final String ALREADY_EXISTING_USERNAME_MSG = "Bad username: user with desired username already exists!";
     
     private static UserDao instance = null;
     
@@ -61,9 +58,9 @@ public class UserDao {
                 user = (User) MyEntityManager.getInstance().mergeEntity(user);
                 return user.getId();
             } else
-                throw new IllegalArgumentException("Bad username: user with desired username already exists!");
-        } catch (Exception ex) {
-            throw new IllegalArgumentException("Bad username: user with desired username already exists!");
+                throw new IllegalArgumentException(ALREADY_EXISTING_USERNAME_MSG);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(ALREADY_EXISTING_USERNAME_MSG, e);
         }
     }    
     
@@ -76,7 +73,7 @@ public class UserDao {
 
             // Verify if the id of authenticated user corresponds to the id of the user to update
             if (authenticatedId != id)
-                throw new SecurityException("User unauthorized");
+                throw new SecurityException(USER_UNAUTHORIZED_MSG);
 
             EntityManager em = MyEntityManager.getInstance().getEm();
             User user = (User) MyEntityManager.getInstance().findEntity(User.class, id);
@@ -91,8 +88,8 @@ public class UserDao {
                 // I check if already exists a user with same username and different id
                 if (existingUser == null)
                     user.setUsername(username);
-                else if (id != existingUser.getId())
-                    throw new IllegalArgumentException("Bad username: user with desired username already exists!");
+                else if (! id.equals(existingUser.getId()))
+                    throw new IllegalArgumentException(ALREADY_EXISTING_USERNAME_MSG);
             }
             if (password != null)
                 user.setPassword(password);
@@ -102,7 +99,7 @@ public class UserDao {
             em.getTransaction().commit();
 
         } catch (Exception e) {
-            throw new SecurityException("User unauthorized");
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }   
 
     }
@@ -117,7 +114,7 @@ public class UserDao {
             
             MyEntityManager.getInstance().removeEntity(User.class, id);
         } catch (Exception e) {
-            throw new SecurityException("User unauthorized");
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }
     }
     
@@ -129,53 +126,20 @@ public class UserDao {
         EntityManager em = MyEntityManager.getInstance().getEm();
         TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_USERNAME, User.class);
         query.setParameter("username", username);
-        User user = query.getSingleResult();
-
-        return user;
+        return query.getSingleResult();
     }
     
     public boolean doesUsernameExist(String username) {
         try {
             if (findByUsername(username) != null)
                 return true;
-            return false;
-        } catch (Exception ex) {
+        } catch (Exception e) {
             return false;
         }
+        
+        return false;
     }
-    
-//    public List<User> findAllUsers(String orderByString, String orderTypeString) throws Exception {
-//        EntityManager em = MyEntityManager.getInstance().getEm();
-//        CriteriaBuilder cb = em.getCriteriaBuilder();
-//        CriteriaQuery<User> cq = cb.createQuery(User.class);
-//        Root<User> us = cq.from(User.class);
-//        cq.select(us);
-//        
-//        // Get the order criteria
-//        // it throws exception if strings don't correspond to allowed enum values
-//        User.OrderBy orderBy = User.OrderBy.valueOf(orderByString);
-//        User.OrderType orderType = User.OrderType.valueOf(orderTypeString.toUpperCase());
-//        
-//        List<Order> orderCriteria = new ArrayList<>();
-//        Expression exp;
-//        if (orderBy.equals(User.OrderBy.fullName)) {
-//            exp = us.get(orderBy.toString());
-//            orderCriteria.add(
-//                              (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
-//                             );
-//        }
-//        
-//        exp = us.get(User.OrderBy.id.toString());
-//        orderCriteria.add(
-//                          (orderType.equals(User.OrderType.DESC)) ? cb.desc(exp) : cb.asc(exp)
-//                         );
-//        
-//        cq.orderBy(orderCriteria);
-//        
-//        TypedQuery<User> q = em.createQuery(cq);
-//        return q.getResultList();
-//    }
-    
+        
     public List<User> findAllUsers(List<String> filtersString, List<String> ordersString) throws Exception {
          return MyEntityManager.getInstance().findAllEntities(User.class,
         		 filtersString, ordersString, User.FilterBy.class, User.OrderBy.class);

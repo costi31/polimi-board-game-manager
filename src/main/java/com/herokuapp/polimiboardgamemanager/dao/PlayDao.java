@@ -3,15 +3,11 @@ package com.herokuapp.polimiboardgamemanager.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.Play;
 
 public class PlayDao {
     
-    private static final Logger LOGGER = LogManager.getLogger(PlayDao.class);
     private static final String USER_UNAUTHORIZED_MSG = "User unauthorized to do this operation!";
     private static final String PLAY_ID_EXISTS_MSG = "A play with desired id already exists!";
     
@@ -44,10 +40,9 @@ public class PlayDao {
             if (id != null && findById(id) != null) // if already exists a play with specified id
             	throw new IllegalArgumentException(PLAY_ID_EXISTS_MSG);
             
-            play = (Play)MyEntityManager.getInstance().mergeEntity(play);
-            return play.getId();
+            return ((Play)MyEntityManager.getInstance().mergeEntity(play)).getId();
         } catch (Exception e) {
-            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }        
     }  
     
@@ -64,7 +59,7 @@ public class PlayDao {
             
             MyEntityManager.getInstance().mergeEntity(play);
         } catch (Exception e) {
-            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }        
     }      
         
@@ -82,7 +77,7 @@ public class PlayDao {
             
             MyEntityManager.getInstance().removeEntity(Play.class, id);
         } catch (Exception e) {
-            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }
     }
     

@@ -53,7 +53,7 @@ public class MyEntityManager {
     }    
     
     private MyEntityManager() {
-        Map<String, Object> configOverrides = new HashMap<String, Object>();
+        Map<String, Object> configOverrides = new HashMap<>();
         
         try {
             URI dbUri = new URI(System.getenv("CLEARDB_DATABASE_URL"));
@@ -64,7 +64,7 @@ public class MyEntityManager {
             configOverrides.put("javax.persistence.jdbc.user", username);
             configOverrides.put("javax.persistence.jdbc.password", password);
         } catch (URISyntaxException e) {
-            LOGGER.fatal(e.getMessage());
+            LOGGER.fatal(e.getMessage(), e);
         }
         
         
@@ -153,11 +153,11 @@ public class MyEntityManager {
             
             exp = entity.get(orderBy.toString());
             orderCriteria.add(
-                              (orderMode.equals(OrderMode.DESC)) ? cb.desc(exp) : cb.asc(exp)
+                              orderMode.equals(OrderMode.DESC) ? cb.desc(exp) : cb.asc(exp)
                              );
         }        
         
-        // If id order was not added I added as an extra criterium
+        // If id order was not added I added as an extra criteria
         if (! ordersMap.containsKey("id")) {
 	        exp = entity.get("id");
 	        orderCriteria.add(cb.asc(exp));

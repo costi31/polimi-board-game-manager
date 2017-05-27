@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,11 +41,11 @@ public class BoardGame implements Identifiable<Long>, Serializable {
     // ======================================    
     
     public enum OrderBy {
-        name, id
+        id, name, designers, cover
     }
     
     public enum FilterBy {
-        name
+        name, designers, cover
     }
 
     public static final String FIND_BY_NAME = "BoardGame.findByName";
@@ -157,5 +158,35 @@ public class BoardGame implements Identifiable<Long>, Serializable {
         Collection<Link> linksCollection = getLinksCollection();
         return linksCollection.toArray(new Link[linksCollection.size()]);
     }    
+    
+
+    // ======================================
+    // =   Methods hash, equals, toString   =
+    // ======================================
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+        	return true;
+        if (o == null || getClass() != o.getClass())
+        	return false;
+        BoardGame board = (BoardGame) o;
+        return Objects.equals(id, board.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Play{" +
+                "id='" + id + "'" +
+                ", name='" + name + "'" +
+                ", designers='" + designers + "'" +
+                ", cover='" + cover + "'" +
+                '}';
+    }
 
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -206,7 +205,6 @@ public class UserResource {
             GenericEntity<List<Play>> list = new GenericEntity<List<Play>>(PlayDao.getInstance().findPlaysByUser(userId, filter, order)){};
             return Response.ok(list).build();
         } catch (Exception e) {
-        	e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).build();
         }        
     }

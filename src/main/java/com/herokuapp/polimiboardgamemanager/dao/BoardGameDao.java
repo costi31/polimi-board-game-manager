@@ -3,6 +3,7 @@ package com.herokuapp.polimiboardgamemanager.dao;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import com.herokuapp.polimiboardgamemanager.filter.AuthenticationFilter;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
@@ -59,10 +60,9 @@ public class BoardGameDao {
             if (id != null && findById(id) != null) // if already exists a board game with specified id
             	throw new IllegalArgumentException(BOARDGAME_ID_EXISTS_MSG);            
             
-            board = (BoardGame)MyEntityManager.getInstance().mergeEntity(board);
-            return board.getId();
+            return ((BoardGame)MyEntityManager.getInstance().mergeEntity(board)).getId();
         } catch (Exception e) {
-            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }        
     }
     
@@ -88,7 +88,7 @@ public class BoardGameDao {
             
             MyEntityManager.getInstance().mergeEntity(board);
         } catch (Exception e) {
-            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }       
     }
     
@@ -106,7 +106,7 @@ public class BoardGameDao {
             
             MyEntityManager.getInstance().removeEntity(BoardGame.class, id);
         } catch (Exception e) {
-            throw new SecurityException(USER_UNAUTHORIZED_MSG);
+            throw new SecurityException(USER_UNAUTHORIZED_MSG, e);
         }
     }
     
@@ -116,8 +116,8 @@ public class BoardGameDao {
      */
     public long getBoardGamesCount() {
         EntityManager em = MyEntityManager.getInstance().getEm();
-        long count = (long) em.createQuery("SELECT count(id) FROM BoardGame board").getSingleResult();
-        return count;
+        TypedQuery<Long> query = em.createNamedQuery(BoardGame.COUNT_ALL, Long.class);
+        return query.getSingleResult();
     }
       
     public List<BoardGame> findAllBoardGames(List<String> filtersString, List<String> ordersString) throws Exception {

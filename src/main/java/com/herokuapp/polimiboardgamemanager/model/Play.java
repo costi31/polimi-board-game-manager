@@ -124,7 +124,7 @@ public class Play implements Identifiable<Long>, Serializable {
     }
     
     public Play(User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed, Time timeToComplete, User userWinner) {
-    	this(null, userCreator, boardGame, date, playersInvolved, completed, timeToComplete, null);
+    	this(null, userCreator, boardGame, date, playersInvolved, completed, timeToComplete, userWinner);
     }
     
     public Play(Long id, User userCreator, BoardGame boardGame, Calendar date, int playersInvolved, boolean completed, Time timeToComplete, User userWinner) {
@@ -283,8 +283,10 @@ public class Play implements Identifiable<Long>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+        	return true;
+        if (o == null || getClass() != o.getClass())
+        	return false;
         Play play = (Play) o;
         return Objects.equals(id, play.id);
     }
@@ -299,7 +301,8 @@ public class Play implements Identifiable<Long>, Serializable {
         return "Play{" +
                 "id='" + id + "'" +
                 ", userCreatorId='" + userCreator.getId() + "'" +
-                " boardGameId='" + boardGame.getId() + "'" +
+                ", boardGameId='" + boardGame.getId() + "'" +
+                ", date='" + date.toString() + "'" +
                 '}';
     }    
 }

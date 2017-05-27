@@ -96,6 +96,7 @@ public class User implements Identifiable<Long>, Serializable {
     
 
     public User() {
+    	super();
     }
     
     public User(String fullName, String username, String password, boolean powerUser) {
@@ -229,8 +230,10 @@ public class User implements Identifiable<Long>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+        	return true;
+        if (o == null || getClass() != o.getClass())
+        	return false;
         User user = (User) o;
         return Objects.equals(id, user.id);
     }

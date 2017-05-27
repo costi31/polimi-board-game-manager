@@ -14,8 +14,10 @@ public class LinkAdapter
 extends XmlAdapter<LinkJaxb, Link> {  
 
 	public LinkAdapter() {  
+		super();
 	}  
 
+	@Override
 	public Link unmarshal(LinkJaxb p1) {  
 
 		Link.Builder builder = Link.fromUri(p1.getUri());  
@@ -25,6 +27,7 @@ extends XmlAdapter<LinkJaxb, Link> {
 		return builder.build();  
 	}  
 
+	@Override
 	public LinkJaxb marshal(Link p1) {  
 
 		Map<QName, Object> params = new HashMap<>();  
