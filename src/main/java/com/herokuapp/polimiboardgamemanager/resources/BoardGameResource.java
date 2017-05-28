@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
+import com.herokuapp.polimiboardgamemanager.util.InputValidator;
 
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class BoardGameResource {
@@ -59,6 +60,20 @@ public class BoardGameResource {
     @Secured
     public Response putBoardGame(BoardGame board,
     							 @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
+    	
+    	if (! InputValidator.isValidGenericInput(board.getName()) || 
+    		! InputValidator.isValidGenericInput(board.getDesigners()) ||
+    		! InputValidator.isValidUrl(board.getCover()) ) {
+    		
+    		String response = InputValidator.INVALID_INPUT_MSG + "\n" + 
+    						  "The name must match this regex of allowed characters: " +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The designers must match this regex of allowed characters: " +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The url must be valid.";
+    		
+    		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
+    	}      	
         
         try {
             if (BoardGameDao.getInstance().findById(id) != null) {

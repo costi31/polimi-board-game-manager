@@ -23,6 +23,7 @@ import javax.ws.rs.core.UriInfo;
 import com.herokuapp.polimiboardgamemanager.dao.BoardGameDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
+import com.herokuapp.polimiboardgamemanager.util.InputValidator;
 
 @Path("/boardgames")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
@@ -49,6 +50,20 @@ public class BoardGamesResource {
                                      @FormParam("cover") String cover,
                                      @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer)
                                     throws IOException {
+    	
+    	if (! InputValidator.isValidGenericInput(name) || 
+    		! InputValidator.isValidGenericInput(designers) ||
+    		! InputValidator.isValidUrl(cover) ) {
+    		
+    		String response = InputValidator.INVALID_INPUT_MSG + "\n" + 
+    						  "The name must match this regex of allowed characters: " +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The designers must match this regex of allowed characters: " +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The url must be valid.";
+    		
+    		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
+    	}  
         
         try {
             long id = BoardGameDao.getInstance().createBoardGame(name, designers, cover, authorizationBearer);
@@ -64,6 +79,20 @@ public class BoardGamesResource {
     public Response newBoardGameApp(BoardGame board,
                                     @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer)
                                    throws IOException {
+    	
+    	if (! InputValidator.isValidGenericInput(board.getName()) || 
+    		! InputValidator.isValidGenericInput(board.getDesigners()) ||
+    		! InputValidator.isValidUrl(board.getCover()) ) {
+    		
+    		String response = InputValidator.INVALID_INPUT_MSG + "\n" + 
+    						  "The name must match this regex of allowed characters: " +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The designers must match this regex of allowed characters: " +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The url must be valid.";
+    		
+    		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
+    	}      	
         
         try {
             long id = BoardGameDao.getInstance().createBoardGame(board, authorizationBearer);

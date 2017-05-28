@@ -33,7 +33,7 @@ public class BoardGamesResourceTest extends JerseyTest {
     private static final String ADMIN_USERNAME = "albert";
     private static final String NEW_NAME = "New board game";
     private static final String NEW_DESIGNERS = "pinco, pallo";
-    private static final String NEW_COVER = "New_board_game_cover.jpg";
+    private static final String NEW_COVER = "http://polimi-board-game-manager.herokuapp.com/New_board_game_cover.jpg";
 
     @Override
     protected Application configure() {
