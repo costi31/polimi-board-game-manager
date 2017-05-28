@@ -1,9 +1,9 @@
-/**
- * 
- */
 package com.herokuapp.polimiboardgamemanager.util;
 
+import org.apache.commons.validator.routines.UrlValidator;
+
 /**
+ * Class with only static methods to check if input strings are valid
  * @author Luca Luciano Costanzo
  *
  */
@@ -24,7 +24,7 @@ public class InputValidation {
 	 * @param username the username String to check
 	 * @return <b>true</b> if the username is valid, <b>false</b> otherwise.
 	 */
-	public static boolean isUsernameValid(String username) {	
+	public static boolean isValidUsername(String username) {	
 		return username.matches(USERNAME_ALLOWED_CHARACTERS);
 	}
 	
@@ -33,7 +33,7 @@ public class InputValidation {
 	 * @param password the password String to check
 	 * @return <b>true</b> if the password is valid, <b>false</b> otherwise.
 	 */
-	public static boolean isPasswordValid(String password) {	
+	public static boolean isValidPassword(String password) {	
 		return password.matches(PASSWORD_ALLOWED_CHARACTERS);
 	}
 	
@@ -42,9 +42,19 @@ public class InputValidation {
 	 * @param input the password String to check
 	 * @return <b>true</b> if the password is valid, <b>false</b> otherwise.
 	 */
-	public static boolean isGenericInputValid(String input) {	
+	public static boolean isValidGenericInput(String input) {	
 		return input.matches(GENERIC_INPUT_ALLOWED_CHARACTERS);
 	}
 	
-
+	/**
+	 * Checks if an url is valid, i.e. if it contains legal characters
+	 * @param url the url String to check
+	 * @return <b>true</b> if the url is valid, <b>false</b> otherwise.
+	 */	
+	public static boolean isValidUrl(String url) {	
+	    String[] schemes = {"http","https"};
+	    UrlValidator urlValidator = new UrlValidator(schemes);
+		return urlValidator.isValid(url);
+	}
+	
 }

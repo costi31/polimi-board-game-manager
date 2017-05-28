@@ -26,6 +26,7 @@ import com.herokuapp.polimiboardgamemanager.dao.UserDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
+import com.herokuapp.polimiboardgamemanager.util.InputValidation;
 
 /**
  * Resource representing the users. It responds to http requests
@@ -37,6 +38,8 @@ import com.herokuapp.polimiboardgamemanager.model.User;
 @Path("/users")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class UserResource {
+	
+	public static final String INVALID_INPUT_MSG = "The data sent in input has an illegal format!";
     
     // ======================================
     // =          Injection Points          =
@@ -67,6 +70,18 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response authenticateUser(@FormParam("username") String username, 
                                      @FormParam("password") String password) {
+    	
+    	if (! InputValidation.isValidUsername(username) ||
+    		! InputValidation.isValidPassword(password) ) {
+    		
+    		String response = INVALID_INPUT_MSG + "\n" + 
+    						  "The username must match this regex of allowed characters: " +
+    						  InputValidation.USERNAME_ALLOWED_CHARACTERS + "\n" +
+    						  "The password must match this regex of allowed characters: " +
+    						  InputValidation.PASSWORD_ALLOWED_CHARACTERS;
+    		
+    		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
+    	}
 
         try {
 
@@ -102,6 +117,22 @@ public class UserResource {
                            @FormParam("username") String username, 
                            @FormParam("password") String password
                            ) {
+    	
+    	if (! InputValidation.isValidGenericInput(fullName) || 
+    		! InputValidation.isValidUsername(username) ||
+    		! InputValidation.isValidPassword(password) ) {
+    		
+    		String response = INVALID_INPUT_MSG + "\n" + 
+    						  "The fullname must match this regex of allowed characters: " +
+    						  InputValidation.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The username must match this regex of allowed characters: " +
+    						  InputValidation.USERNAME_ALLOWED_CHARACTERS + "\n" +
+    						  "The password must match this regex of allowed characters: " +
+    						  InputValidation.PASSWORD_ALLOWED_CHARACTERS;
+    		
+    		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
+    	}    	
+    	
         try {
             long id = UserDao.getInstance().createUser(fullName, username, password);
             return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(id)).build()).build();
@@ -221,6 +252,21 @@ public class UserResource {
                             @FormParam("password") String password,
                             @PathParam("userId") Long userId,
                             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
+    	
+    	if ((fullName != null && ! InputValidation.isValidGenericInput(fullName)) || 
+    		(username != null && ! InputValidation.isValidUsername(username)) ||
+    		(password != null && ! InputValidation.isValidPassword(password)) ) {
+    		
+    		String response = INVALID_INPUT_MSG + "\n" + 
+    						  "The fullname must match this regex of allowed characters: " +
+    						  InputValidation.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  "The username must match this regex of allowed characters: " +
+    						  InputValidation.USERNAME_ALLOWED_CHARACTERS + "\n" +
+    						  "The password must match this regex of allowed characters: " +
+    						  InputValidation.PASSWORD_ALLOWED_CHARACTERS;
+    		
+    		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
+    	}
         
         try {
             if (UserDao.getInstance().findById(userId) != null) {
