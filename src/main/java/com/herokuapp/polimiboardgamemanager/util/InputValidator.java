@@ -7,13 +7,13 @@ import org.apache.commons.validator.routines.UrlValidator;
  * @author Luca Luciano Costanzo
  *
  */
-public class InputValidation {
+public class InputValidator {
 	
 	public static final String USERNAME_ALLOWED_CHARACTERS = "[A-Za-z0-9]+";
 	public static final String PASSWORD_ALLOWED_CHARACTERS = "[\\w\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]+";
 	public static final String GENERIC_INPUT_ALLOWED_CHARACTERS = "[A-Za-z0-9 ;,.'\"-]+";
 	
-	private InputValidation() {
+	private InputValidator() {
 		/*
 		 * Empty and private constructor because this class has only static methods
 		 */

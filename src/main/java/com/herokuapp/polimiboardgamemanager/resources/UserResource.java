@@ -26,7 +26,7 @@ import com.herokuapp.polimiboardgamemanager.dao.UserDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
-import com.herokuapp.polimiboardgamemanager.util.InputValidation;
+import com.herokuapp.polimiboardgamemanager.util.InputValidator;
 
 /**
  * Resource representing the users. It responds to http requests
@@ -71,14 +71,14 @@ public class UserResource {
     public Response authenticateUser(@FormParam("username") String username, 
                                      @FormParam("password") String password) {
     	
-    	if (! InputValidation.isValidUsername(username) ||
-    		! InputValidation.isValidPassword(password) ) {
+    	if (! InputValidator.isValidUsername(username) ||
+    		! InputValidator.isValidPassword(password) ) {
     		
     		String response = INVALID_INPUT_MSG + "\n" + 
     						  "The username must match this regex of allowed characters: " +
-    						  InputValidation.USERNAME_ALLOWED_CHARACTERS + "\n" +
+    						  InputValidator.USERNAME_ALLOWED_CHARACTERS + "\n" +
     						  "The password must match this regex of allowed characters: " +
-    						  InputValidation.PASSWORD_ALLOWED_CHARACTERS;
+    						  InputValidator.PASSWORD_ALLOWED_CHARACTERS;
     		
     		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
     	}
@@ -118,17 +118,17 @@ public class UserResource {
                            @FormParam("password") String password
                            ) {
     	
-    	if (! InputValidation.isValidGenericInput(fullName) || 
-    		! InputValidation.isValidUsername(username) ||
-    		! InputValidation.isValidPassword(password) ) {
+    	if (! InputValidator.isValidGenericInput(fullName) || 
+    		! InputValidator.isValidUsername(username) ||
+    		! InputValidator.isValidPassword(password) ) {
     		
     		String response = INVALID_INPUT_MSG + "\n" + 
     						  "The fullname must match this regex of allowed characters: " +
-    						  InputValidation.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
     						  "The username must match this regex of allowed characters: " +
-    						  InputValidation.USERNAME_ALLOWED_CHARACTERS + "\n" +
+    						  InputValidator.USERNAME_ALLOWED_CHARACTERS + "\n" +
     						  "The password must match this regex of allowed characters: " +
-    						  InputValidation.PASSWORD_ALLOWED_CHARACTERS;
+    						  InputValidator.PASSWORD_ALLOWED_CHARACTERS;
     		
     		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
     	}    	
@@ -253,17 +253,17 @@ public class UserResource {
                             @PathParam("userId") Long userId,
                             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
     	
-    	if ((fullName != null && ! InputValidation.isValidGenericInput(fullName)) || 
-    		(username != null && ! InputValidation.isValidUsername(username)) ||
-    		(password != null && ! InputValidation.isValidPassword(password)) ) {
+    	if ((fullName != null && ! InputValidator.isValidGenericInput(fullName)) || 
+    		(username != null && ! InputValidator.isValidUsername(username)) ||
+    		(password != null && ! InputValidator.isValidPassword(password)) ) {
     		
     		String response = INVALID_INPUT_MSG + "\n" + 
     						  "The fullname must match this regex of allowed characters: " +
-    						  InputValidation.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
+    						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
     						  "The username must match this regex of allowed characters: " +
-    						  InputValidation.USERNAME_ALLOWED_CHARACTERS + "\n" +
+    						  InputValidator.USERNAME_ALLOWED_CHARACTERS + "\n" +
     						  "The password must match this regex of allowed characters: " +
-    						  InputValidation.PASSWORD_ALLOWED_CHARACTERS;
+    						  InputValidator.PASSWORD_ALLOWED_CHARACTERS;
     		
     		return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_XML).entity(response).build();
     	}
