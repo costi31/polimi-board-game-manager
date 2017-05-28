@@ -38,8 +38,6 @@ import com.herokuapp.polimiboardgamemanager.util.InputValidator;
 @Path("/users")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class UserResource {
-	
-	public static final String INVALID_INPUT_MSG = "The data sent in input has an illegal format!";
     
     // ======================================
     // =          Injection Points          =
@@ -74,7 +72,7 @@ public class UserResource {
     	if (! InputValidator.isValidUsername(username) ||
     		! InputValidator.isValidPassword(password) ) {
     		
-    		String response = INVALID_INPUT_MSG + "\n" + 
+    		String response = InputValidator.INVALID_INPUT_MSG + "\n" + 
     						  "The username must match this regex of allowed characters: " +
     						  InputValidator.USERNAME_ALLOWED_CHARACTERS + "\n" +
     						  "The password must match this regex of allowed characters: " +
@@ -122,7 +120,7 @@ public class UserResource {
     		! InputValidator.isValidUsername(username) ||
     		! InputValidator.isValidPassword(password) ) {
     		
-    		String response = INVALID_INPUT_MSG + "\n" + 
+    		String response = InputValidator.INVALID_INPUT_MSG + "\n" + 
     						  "The fullname must match this regex of allowed characters: " +
     						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
     						  "The username must match this regex of allowed characters: " +
@@ -257,7 +255,7 @@ public class UserResource {
     		(username != null && ! InputValidator.isValidUsername(username)) ||
     		(password != null && ! InputValidator.isValidPassword(password)) ) {
     		
-    		String response = INVALID_INPUT_MSG + "\n" + 
+    		String response = InputValidator.INVALID_INPUT_MSG + "\n" + 
     						  "The fullname must match this regex of allowed characters: " +
     						  InputValidator.GENERIC_INPUT_ALLOWED_CHARACTERS + "\n" +
     						  "The username must match this regex of allowed characters: " +
