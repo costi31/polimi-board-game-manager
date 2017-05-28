@@ -24,7 +24,10 @@ public class InputValidation {
 	 * @param username the username String to check
 	 * @return <b>true</b> if the username is valid, <b>false</b> otherwise.
 	 */
-	public static boolean isValidUsername(String username) {	
+	public static boolean isValidUsername(String username) {
+		if (username == null)
+			return false;
+		
 		return username.matches(USERNAME_ALLOWED_CHARACTERS);
 	}
 	
@@ -34,6 +37,9 @@ public class InputValidation {
 	 * @return <b>true</b> if the password is valid, <b>false</b> otherwise.
 	 */
 	public static boolean isValidPassword(String password) {	
+		if (password == null)
+			return false;
+		
 		return password.matches(PASSWORD_ALLOWED_CHARACTERS);
 	}
 	
@@ -43,6 +49,9 @@ public class InputValidation {
 	 * @return <b>true</b> if the password is valid, <b>false</b> otherwise.
 	 */
 	public static boolean isValidGenericInput(String input) {	
+		if (input == null)
+			return false;
+		
 		return input.matches(GENERIC_INPUT_ALLOWED_CHARACTERS);
 	}
 	
@@ -52,6 +61,9 @@ public class InputValidation {
 	 * @return <b>true</b> if the url is valid, <b>false</b> otherwise.
 	 */	
 	public static boolean isValidUrl(String url) {	
+		if (url == null)
+			return false;
+		
 	    String[] schemes = {"http","https"};
 	    UrlValidator urlValidator = new UrlValidator(schemes);
 		return urlValidator.isValid(url);
