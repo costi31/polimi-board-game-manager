@@ -15,21 +15,27 @@ import com.herokuapp.polimiboardgamemanager.util.PasswordUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+/**
+ * The Class UserDao.
+ */
 public class UserDao {
 	
+	/** The Constant USER_UNAUTHORIZED_MSG. */
 	private static final String USER_UNAUTHORIZED_MSG = "User unauthorized to do this operation!";
+	
+	/** The Constant ALREADY_EXISTING_USERNAME_MSG. */
 	private static final String ALREADY_EXISTING_USERNAME_MSG = "Bad username: user with desired username already exists!";
     
+    /** The instance. */
     private static UserDao instance = null;
     
-    /**
-     * Separator between user id and username in the subject field of the token
-     */
+    /** Separator between user id and username in the subject field of the token. */
     public static final String SUBJECT_ID_SEPARATOR = "@";    
     
     /**
-     * Gets the instance of BoardGameDao
-     * @return instance of BoardGameDao
+     * Gets the instance of UserDao
+     *
+     * @return instance of UserDao
      */
     public static UserDao getInstance() {
         if (instance == null)
@@ -38,13 +44,35 @@ public class UserDao {
         return instance;
     }
 
+    /**
+     * Instantiates a new user dao.
+     */
     private UserDao() {
     }
      
+    /**
+     * Creates the user.
+     *
+     * @param fullName the full name
+     * @param username the username
+     * @param password the password
+     * @return the id of the user
+     * @throws Exception the exception
+     */
     public long createUser(String fullName, String username, String password) throws Exception {
         return createUser(null, fullName, username, password);
     }
     
+    /**
+     * Creates the user with desired id.
+     *
+     * @param id the desired id of the user
+     * @param fullName the full name
+     * @param username the username
+     * @param password the password
+     * @return the id of the user
+     * @throws Exception the exception
+     */
     public long createUser(Long id, String fullName, String username, String password) throws Exception {
         try {
             if (!doesUsernameExist(username)) {
@@ -55,7 +83,7 @@ public class UserDao {
                 else
                     user = new User(fullName, username, password, false);
                 
-                user = (User) MyEntityManager.getInstance().mergeEntity(user);
+                user = MyEntityManager.getInstance().mergeEntity(user);
                 return user.getId();
             } else
                 throw new IllegalArgumentException(ALREADY_EXISTING_USERNAME_MSG);
@@ -64,6 +92,16 @@ public class UserDao {
         }
     }    
     
+    /**
+     * Update user.
+     *
+     * @param id the id of the user to update
+     * @param fullName the full name
+     * @param username the username
+     * @param password the password
+     * @param authorizationBearer the authorization bearer
+     * @throws Exception the exception
+     */
     public void updateUser(Long id, String fullName, String username,
             String password, String authorizationBearer) throws Exception {
 
@@ -76,7 +114,7 @@ public class UserDao {
                 throw new SecurityException(USER_UNAUTHORIZED_MSG);
 
             EntityManager em = MyEntityManager.getInstance().getEm();
-            User user = (User) MyEntityManager.getInstance().findEntity(User.class, id);
+            User user = MyEntityManager.getInstance().findEntity(User.class, id);
 
             em.getTransaction().begin();
 
@@ -104,6 +142,13 @@ public class UserDao {
 
     }
     
+    /**
+     * Removes the user.
+     *
+     * @param id the id of the user to remove
+     * @param authorizationBearer the authorization bearer
+     * @throws Exception the exception
+     */
     public void removeUser(long id, String authorizationBearer) throws Exception {     
         try {
         	long authenticatedId = AuthenticationFilter.getAuthIdFromBearer(authorizationBearer);
@@ -118,10 +163,23 @@ public class UserDao {
         }
     }
     
+    /**
+     * Find by id.
+     *
+     * @param id the id of the user to find
+     * @return the user found
+     */
     public User findById(long id) {
-        return (User) MyEntityManager.getInstance().findEntity(User.class, id);
+        return MyEntityManager.getInstance().findEntity(User.class, id);
     }
     
+    /**
+     * Find user by username.
+     *
+     * @param username the username
+     * @return the user found
+     * @throws Exception the exception
+     */
     public User findByUsername(String username) throws Exception {
         EntityManager em = MyEntityManager.getInstance().getEm();
         TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_USERNAME, User.class);
@@ -129,6 +187,12 @@ public class UserDao {
         return query.getSingleResult();
     }
     
+    /**
+     * Checks if a username exists.
+     *
+     * @param username the username
+     * @return <b>true</b> if the username exists, <b>false</b> otherwise
+     */
     public boolean doesUsernameExist(String username) {
         try {
         	return (findByUsername(username) != null);
@@ -137,11 +201,27 @@ public class UserDao {
         }
     }
         
+    /**
+     * Find all users.
+     *
+     * @param filtersString the list of filters string
+     * @param ordersString the list of orders string
+     * @return the list of users found
+     * @throws Exception the exception
+     */
     public List<User> findAllUsers(List<String> filtersString, List<String> ordersString) throws Exception {
          return MyEntityManager.getInstance().findAllEntities(User.class,
         		 filtersString, ordersString, User.FilterBy.class, User.OrderBy.class);
     }    
         
+    /**
+     * Authenticate a user.
+     *
+     * @param username the username
+     * @param password the password
+     * @return the id of the authenticated user
+     * @throws Exception the exception
+     */
     public long authenticate(String username, String password) throws Exception {
         EntityManager em = MyEntityManager.getInstance().getEm();
         TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_LOGIN_PASSWORD, User.class);
@@ -155,6 +235,14 @@ public class UserDao {
         return user.getId();
     }
 
+    /**
+     * Issue token.
+     *
+     * @param userId the user id
+     * @param username the username
+     * @param uriInfo the uri info
+     * @return the string representing the token
+     */
     public String issueToken(long userId, String username, UriInfo uriInfo) {
         long oneMinuteInMillis=60000;
         Calendar date = Calendar.getInstance();
@@ -172,7 +260,8 @@ public class UserDao {
     }
 
     /**
-     * Gets count of existing users
+     * Gets count of existing users.
+     *
      * @return long count of users
      */
     public long getCount() {
@@ -180,10 +269,4 @@ public class UserDao {
         TypedQuery<Long> query = em.createNamedQuery(User.COUNT_ALL, Long.class);
         return query.getSingleResult();
     }
-
-        
-//    private Date toDate(LocalDateTime localDateTime) {
-//        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-//    }    
-
 }
