@@ -35,6 +35,9 @@ public class BoardGamesResourceTest extends JerseyTest {
     private static final String NEW_DESIGNERS = "pinco, pallo";
     private static final String NEW_COVER = "http://polimi-board-game-manager.herokuapp.com/New_board_game_cover.jpg";
 
+    private static URI newBoardGameLocation;
+    private static long newBoardGameId;
+    
     @Override
     protected Application configure() {
         return new ResourceConfig(UserResource.class, BoardGamesResource.class, BoardGameResource.class);
@@ -147,8 +150,9 @@ public class BoardGamesResourceTest extends JerseyTest {
         		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
         		post(Entity.entity(board, MediaType.APPLICATION_JSON_TYPE));
         
-        URI location = response.getLocation();
-        System.out.print(location);
+        newBoardGameLocation = response.getLocation();
+        String path = newBoardGameLocation.getPath();
+        newBoardGameId = Long.parseLong( path.substring(path.lastIndexOf('/')+1) );
 
         assertEquals(Response.Status.CREATED, Response.Status.fromStatusCode(response.getStatus()));
     }
@@ -160,19 +164,12 @@ public class BoardGamesResourceTest extends JerseyTest {
     	
         Response loginResponse = login("bob", "bob");
         String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
-        
-        // To get the id of the new user created before I have to scan the full name of the users
-        List<BoardGame> allBoards = getAllBoards();
-        long id = 0;
-        for (BoardGame bg: allBoards)
-            if (bg.getName().equals(NEW_NAME))
-                id = bg.getId();
-        
-        System.out.println("Board game to delete: "+id);
+               
+        System.out.println("Board game to delete: "+newBoardGameId);
         
         System.out.println("Authorization: "+authorizationBearer);
         
-        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
+        Response response = target(newBoardGameLocation.getPath()).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
         
         // The removal should fail because bob is not a power user
         
@@ -186,19 +183,12 @@ public class BoardGamesResourceTest extends JerseyTest {
     	
         Response loginResponse = login(ADMIN_USERNAME, ADMIN_USERNAME);
         String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
-        
-        // To get the id of the new user created before I have to scan the full name of the users
-        List<BoardGame> allBoards = getAllBoards();
-        long id = 0;
-        for (BoardGame bg: allBoards)
-            if (bg.getName().equals(NEW_NAME))
-                id = bg.getId();
-        
-        System.out.println("Board game to delete: "+id);
+                
+        System.out.println("Board game to delete: "+newBoardGameId);
         
         System.out.println("Authorization: "+authorizationBearer);
         
-        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
+        Response response = target(newBoardGameLocation.getPath()).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
         
         System.out.println("Response link: "+response.getLink("parent"));
         
