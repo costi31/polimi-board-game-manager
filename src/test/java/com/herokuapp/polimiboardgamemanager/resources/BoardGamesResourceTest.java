@@ -25,25 +25,45 @@ import org.junit.runners.MethodSorters;
 
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 
+/**
+ * The Class BoardGamesResourceTest.
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BoardGamesResourceTest extends JerseyTest {
 	
+    /** The Constant TARGET. */
     private static final String TARGET = "/boardgames";
     
+    /** The Constant ADMIN_USERNAME. */
     private static final String ADMIN_USERNAME = "albert";
+    
+    /** The Constant NEW_NAME. */
     private static final String NEW_NAME = "New board game";
+    
+    /** The Constant NEW_DESIGNERS. */
     private static final String NEW_DESIGNERS = "pinco, pallo";
+    
+    /** The Constant NEW_COVER. */
     private static final String NEW_COVER = "http://polimi-board-game-manager.herokuapp.com/New_board_game_cover.jpg";
 
+    /** The new board game location. */
     private static URI newBoardGameLocation;
+    
+    /** The new board game id. */
     private static long newBoardGameId;
     
+    /* (non-Javadoc)
+     * @see org.glassfish.jersey.test.JerseyTest#configure()
+     */
     @Override
     protected Application configure() {
         return new ResourceConfig(UserResource.class, BoardGamesResource.class, BoardGameResource.class);
     }
 
 
+    /**
+     * T 1 find all board games.
+     */
     @Test
     public void t1_findAllBoardGames() {
         System.out.println("----------------------------------------------------------------");
@@ -65,6 +85,9 @@ public class BoardGamesResourceTest extends JerseyTest {
         assertNotNull(allBoards);
     }
     
+    /**
+     * T 2 get board game 4.
+     */
     @Test
     public void t2_getBoardGame4() {
         System.out.println("----------------------------------------------------------------");
@@ -81,6 +104,9 @@ public class BoardGamesResourceTest extends JerseyTest {
     }
       
     
+    /**
+     * T 3 get board game links.
+     */
     @Test
     public void t3_getBoardGameLinks() {
         System.out.println("----------------------------------------------------------------");
@@ -104,6 +130,9 @@ public class BoardGamesResourceTest extends JerseyTest {
         }
     }
     
+    /**
+     * T 4 board games count.
+     */
     @Test
     public void t4_boardGamesCount() {
         System.out.println("----------------------------------------------------------------");
@@ -115,6 +144,9 @@ public class BoardGamesResourceTest extends JerseyTest {
         assertTrue(count >= 0);
     }  
     
+    /**
+     * T 5 create board game fail.
+     */
     @Test
     public void t5_createBoardGameFail() {
         System.out.println("----------------------------------------------------------------");
@@ -135,6 +167,9 @@ public class BoardGamesResourceTest extends JerseyTest {
         assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
     }    
     
+    /**
+     * T 6 create board game post.
+     */
     @Test
     public void t6_createBoardGamePost() {
         System.out.println("----------------------------------------------------------------");
@@ -157,6 +192,9 @@ public class BoardGamesResourceTest extends JerseyTest {
         assertEquals(Response.Status.CREATED, Response.Status.fromStatusCode(response.getStatus()));
     }
     
+    /**
+     * T 6 remove board game fail.
+     */
     @Test
     public void t6_removeBoardGameFail() {
         System.out.println("----------------------------------------------------------------");
@@ -176,6 +214,9 @@ public class BoardGamesResourceTest extends JerseyTest {
         assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
     }     
     
+    /**
+     * T 7 remove board game.
+     */
     @Test
     public void t7_removeBoardGame() {
         System.out.println("----------------------------------------------------------------");
@@ -196,6 +237,13 @@ public class BoardGamesResourceTest extends JerseyTest {
     }    
     
     
+    /**
+     * Login.
+     *
+     * @param username the username
+     * @param password the password
+     * @return the response
+     */
     private Response login(String username, String password) {
         Form form = new Form();
         // Here I assume that there is a test user with username=bob and password=bob
@@ -204,6 +252,11 @@ public class BoardGamesResourceTest extends JerseyTest {
         return target("users/login").request().post(Entity.form(form));
     }   
     
+    /**
+     * Gets the all boards.
+     *
+     * @return the all boards
+     */
     private List<BoardGame> getAllBoards() {
     	return target(TARGET).request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<BoardGame>>() {});
     }

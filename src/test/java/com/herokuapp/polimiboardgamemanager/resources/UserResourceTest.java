@@ -23,23 +23,39 @@ import org.junit.runners.MethodSorters;
 
 import com.herokuapp.polimiboardgamemanager.model.User;
 
+/**
+ * The Class UserResourceTest.
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserResourceTest extends JerseyTest {
     
+    /** The Constant TARGET. */
     private static final String TARGET = "/users";
     
+    /** The Constant NEW_USERNAME. */
     private static final String NEW_USERNAME = "cody";
+    
+    /** The Constant NEW_FULLNAME. */
     private static final String NEW_FULLNAME = "Cody Test";
     
+    /** The new user location. */
     private static URI newUserLocation;
+    
+    /** The new user id. */
     private static long newUserId;    
 
+    /* (non-Javadoc)
+     * @see org.glassfish.jersey.test.JerseyTest#configure()
+     */
     @Override
     protected Application configure() {
         return new ResourceConfig(UserResource.class);
     }
 
 
+    /**
+     * T 1 get all users.
+     */
     @Test
     public void t1_getAllUsers() {
         System.out.println("----------------------------------------------------------------");
@@ -55,6 +71,9 @@ public class UserResourceTest extends JerseyTest {
         assertNotNull(allUsers);
     }
     
+    /**
+     * T 2 get users count.
+     */
     @Test
     public void t2_getUsersCount() {
         System.out.println("----------------------------------------------------------------");
@@ -64,6 +83,9 @@ public class UserResourceTest extends JerseyTest {
         assertTrue(count > 0);
     }
     
+    /**
+     * T 3 create user.
+     */
     @Test
     public void t3_createUser() {
         System.out.println("----------------------------------------------------------------");
@@ -84,6 +106,9 @@ public class UserResourceTest extends JerseyTest {
         assertEquals(Response.Status.CREATED, Response.Status.fromStatusCode(response.getStatus()));
     }
        
+    /**
+     * T 4 login fail.
+     */
     @Test
     public void t4_loginFail() {
         System.out.println("----------------------------------------------------------------");
@@ -94,6 +119,9 @@ public class UserResourceTest extends JerseyTest {
         assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
     }
     
+    /**
+     * T 5 login success.
+     */
     @Test
     public void t5_loginSuccess() {
         System.out.println("----------------------------------------------------------------");
@@ -108,6 +136,9 @@ public class UserResourceTest extends JerseyTest {
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
     }    
     
+    /**
+     * T 6 get user.
+     */
     @Test
     public void t6_getUser() {
         System.out.println("----------------------------------------------------------------");
@@ -120,6 +151,9 @@ public class UserResourceTest extends JerseyTest {
         assertNotNull(user);
     }
     
+    /**
+     * T 7 update user.
+     */
     @Test
     public void t7_updateUser() {
         System.out.println("----------------------------------------------------------------");
@@ -145,6 +179,9 @@ public class UserResourceTest extends JerseyTest {
         assertEquals(Response.Status.NO_CONTENT, Response.Status.fromStatusCode(response.getStatus()));       
     }
     
+    /**
+     * T 8 remove user.
+     */
     @Test
     public void t8_removeUser() {
         System.out.println("----------------------------------------------------------------");
@@ -164,6 +201,13 @@ public class UserResourceTest extends JerseyTest {
         assertEquals(Response.Status.NO_CONTENT, Response.Status.fromStatusCode(response.getStatus()));
     }  
     
+    /**
+     * Login.
+     *
+     * @param username the username
+     * @param password the password
+     * @return the response
+     */
     private Response login(String username, String password) {
         Form form = new Form();
         // Here I assume that there is a test user with username=bob and password=bob
@@ -172,6 +216,11 @@ public class UserResourceTest extends JerseyTest {
         return target(TARGET+"/login").request().post(Entity.form(form));
     }
     
+    /**
+     * Gets the all users.
+     *
+     * @return the all users
+     */
     private List<User> getAllUsers() {
         return target(TARGET).request(MediaType.APPLICATION_JSON).get(new GenericType<List<User>>() {});
     }

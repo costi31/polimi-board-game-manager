@@ -28,24 +28,44 @@ import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
+/**
+ * The Class PlayResourceTest.
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PlayResourceTest extends JerseyTest {
 	
+	/** The Constant USER_CREATOR_ID. */
 	private static final long USER_CREATOR_ID = 1;
+	
+	/** The Constant USER_CREATOR_USERNAME. */
 	private static final String USER_CREATOR_USERNAME = "albert";
+	
+	/** The Constant BOARDGAME_ID. */
 	private static final long BOARDGAME_ID = 4;
+	
+	/** The Constant PLAY_DATE. */
 	private static final Calendar PLAY_DATE = Calendar.getInstance();
 	
+    /** The Constant TARGET. */
     private static final String TARGET = "/users/" + USER_CREATOR_ID + "/plays/";
     
+    /** The new play location. */
     private static URI newPlayLocation;
+    
+    /** The new play id. */
     private static long newPlayId;
 
+    /* (non-Javadoc)
+     * @see org.glassfish.jersey.test.JerseyTest#configure()
+     */
     @Override
     protected Application configure() {
         return new ResourceConfig(PlayResource.class, UserResource.class, BoardGamesResource.class, BoardGameResource.class);
     }
     
+    /**
+     * T 1 create play fail.
+     */
     @Test
     public void t1_createPlayFail() {
         System.out.println("----------------------------------------------------------------");
@@ -68,6 +88,9 @@ public class PlayResourceTest extends JerseyTest {
         assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
     }    
     
+    /**
+     * T 2 create play success.
+     */
     @Test
     public void t2_createPlaySuccess() {
         System.out.println("----------------------------------------------------------------");
@@ -95,6 +118,9 @@ public class PlayResourceTest extends JerseyTest {
     }     
 
 
+    /**
+     * T 3 find all plays.
+     */
     @Test
     public void t3_findAllPlays() {
         System.out.println("----------------------------------------------------------------");
@@ -113,6 +139,9 @@ public class PlayResourceTest extends JerseyTest {
         assertNotNull(allPlays);
     }
     
+    /**
+     * T 4 get play.
+     */
     @Test
     public void t4_getPlay() {
         System.out.println("----------------------------------------------------------------");
@@ -125,6 +154,9 @@ public class PlayResourceTest extends JerseyTest {
         assertNotNull(newPlay);
     }
     
+    /**
+     * T 5 remove play fail.
+     */
     @Test
     public void t5_removePlayFail() {
         System.out.println("----------------------------------------------------------------");
@@ -144,6 +176,9 @@ public class PlayResourceTest extends JerseyTest {
         assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
     }     
     
+    /**
+     * T 6 remove play success.
+     */
     @Test
     public void t6_removePlaySuccess() {
         System.out.println("----------------------------------------------------------------");
@@ -164,6 +199,13 @@ public class PlayResourceTest extends JerseyTest {
     }    
     
     
+    /**
+     * Login.
+     *
+     * @param username the username
+     * @param password the password
+     * @return the response
+     */
     private Response login(String username, String password) {
         Form form = new Form();
         // Here I assume that there is a test user with username=bob and password=bob
@@ -172,6 +214,11 @@ public class PlayResourceTest extends JerseyTest {
         return target("users/login").request().post(Entity.form(form));
     }   
     
+    /**
+     * Gets the all plays.
+     *
+     * @return the all plays
+     */
     private List<Play> getAllPlays() {
     	return target(TARGET).request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<Play>>() {});
     }
