@@ -28,6 +28,7 @@ import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
 import com.herokuapp.polimiboardgamemanager.util.InputValidator;
 
+// TODO: Auto-generated Javadoc
 /**
  * Resource representing the users. It responds to http requests
  * sent to path "/users", to manage users and plays associated to the user.
@@ -43,9 +44,11 @@ public class UserResource {
     // =          Injection Points          =
     // ======================================
 
+    /** The uri info. */
     @Context
     UriInfo uriInfo;
     
+    /** The request. */
     @Context
     Request request;
     
@@ -213,6 +216,12 @@ public class UserResource {
         return UserDao.getInstance().getCount();
     }        
     
+    /**
+     * Find by id.
+     *
+     * @param id the id
+     * @return the response
+     */
     @GET
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
@@ -224,6 +233,26 @@ public class UserResource {
         return Response.ok(user).links(user.getLinksArray()).build();
     }
     
+    /**
+     * It receives the GET requests sent to "/users/{userId}/plays" and returns
+     * all the plays created by the user with id={userId}m existing in the database,
+     * sorted and filtered with the desired criteria.
+     * 
+     * @param userId the id of the user that creates the play
+     * 
+     * @param filter is a list of couples "filterName@filterValue", where filterName can be
+     *        only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.Play#FilterBy Play.FilterBy}
+     *        and filterValue is the string representation of the desired value for the user
+     *        attribute to filter 
+     * @param order is a list of couples "orderBy@orderMode", where orderBy can be
+     *        only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.Play#OrderBy Play.OrderBy}
+     *        and orderMode can be only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.MyEntityManager#OrderMode MyEntityManager.OrderMode}
+     * @return <b>200 OK</b> if there are no errors in the parameters,<br />
+     *         <b>400 Bad request</b> if the parameters are not correct.
+     */
     @GET
     @Path("/{userId}/plays")
     public Response getPlaysByUser(@PathParam("userId") Long userId,
@@ -242,6 +271,16 @@ public class UserResource {
     // =          PUT requests              =
     // ======================================    
     
+    /**
+     * Put user.
+     *
+     * @param fullName the full name
+     * @param username the username
+     * @param password the password
+     * @param userId the user id
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     */
     @PUT
     @Path("/{userId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -283,6 +322,13 @@ public class UserResource {
     // =          DELETE requests           =
     // ======================================
     
+    /**
+     * Removes the.
+     *
+     * @param id the id
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     */
     @DELETE
     @Path("/{id}")
     @Secured
@@ -300,6 +346,13 @@ public class UserResource {
     // =        Other play requests         =
     // ======================================      
     
+    /**
+     * Gets the play.
+     *
+     * @param userId the user id
+     * @param playId the play id
+     * @return the play
+     */
     @Path("/{userId}/plays/{playId}")
     public PlayResource getPlay(@PathParam("userId") Long userId, @PathParam("playId") Long playId) {
         return new PlayResource(uriInfo, request, playId);

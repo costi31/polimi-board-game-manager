@@ -10,13 +10,23 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;  
 
+/**
+ * A custom adapter for jax-rs links.
+ * It solves marshaling and unmarshaling problems for links in json format.
+ */
 public class LinkAdapter  
 extends XmlAdapter<LinkJaxb, Link> {  
 
+	/**
+	 * Instantiates a new link adapter.
+	 */
 	public LinkAdapter() {  
 		super();
 	}  
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
 	@Override
 	public Link unmarshal(LinkJaxb p1) {  
 
@@ -27,6 +37,9 @@ extends XmlAdapter<LinkJaxb, Link> {
 		return builder.build();  
 	}  
 
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
 	@Override
 	public LinkJaxb marshal(Link p1) {  
 

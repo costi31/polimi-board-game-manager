@@ -17,6 +17,9 @@ import com.herokuapp.polimiboardgamemanager.dao.PlayDao;
 import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.Play;
 
+/**
+ * The Class PlayResource.
+ */
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class PlayResource {
     
@@ -24,12 +27,24 @@ public class PlayResource {
     // =          Injection Points          =
     // ======================================    
     
+    /** The uri info. */
     @Context
     UriInfo uriInfo;
+    
+    /** The request. */
     @Context
     Request request;
+    
+    /** The id. */
     private long id;
     
+    /**
+     * Instantiates a new play resource.
+     *
+     * @param uriInfo the uri info
+     * @param request the request
+     * @param id the id
+     */
     public PlayResource(UriInfo uriInfo, Request request, long id) {
         this.uriInfo = uriInfo;
         this.request = request;
@@ -40,6 +55,11 @@ public class PlayResource {
     // =          GET requests              =
     // ======================================
 
+    /**
+     * Gets the play.
+     *
+     * @return the play
+     */
     //Application integration
     @GET
     public Response getPlay() {
@@ -55,6 +75,13 @@ public class PlayResource {
     // =          PUT requests              =
     // ======================================    
     
+    /**
+     * Put play.
+     *
+     * @param play the play
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     */
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Secured
@@ -78,6 +105,12 @@ public class PlayResource {
     // =          DELETE requests           =
     // ======================================
     
+    /**
+     * Removes the.
+     *
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     */
     @DELETE
     @Secured
     public Response remove(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {

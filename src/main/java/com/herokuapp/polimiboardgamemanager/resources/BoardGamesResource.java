@@ -25,6 +25,9 @@ import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 import com.herokuapp.polimiboardgamemanager.util.InputValidator;
 
+/**
+ * The Class BoardGamesResource.
+ */
 @Path("/boardgames")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class BoardGamesResource {
@@ -33,8 +36,11 @@ public class BoardGamesResource {
     // =          Injection Points          =
     // ======================================
     
+    /** The uri info. */
     @Context
     UriInfo uriInfo;
+    
+    /** The request. */
     @Context
     Request request;
     
@@ -42,6 +48,16 @@ public class BoardGamesResource {
     // =          POST requests             =
     // ======================================    
     
+    /**
+     * New board game form.
+     *
+     * @param name the name
+     * @param designers the designers
+     * @param cover the cover
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @POST
     @Secured
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -73,6 +89,14 @@ public class BoardGamesResource {
         }
     }
     
+    /**
+     * New board game app.
+     *
+     * @param board the board
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @POST
     @Secured
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -106,6 +130,23 @@ public class BoardGamesResource {
     // =          GET requests              =
     // ======================================
 
+    /**
+     * It receives the GET requests sent to "/boardgames" and returns
+     * all the board games existing in the database, sorted and filtered
+     * with the desired criteria.
+     * @param filter is a list of couples "filterName@filterValue", where filterName can be
+     *        only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.BoardGame#FilterBy BoardGame.FilterBy}
+     *        and filterValue is the string representation of the desired value for the user
+     *        attribute to filter 
+     * @param order is a list of couples "orderBy@orderMode", where orderBy can be
+     *        only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.BoardGame#OrderBy BoardGame.OrderBy}
+     *        and orderMode can be only one of
+     *        {@link com.herokuapp.polimiboardgamemanager.model.MyEntityManager#OrderMode MyEntityManager.OrderMode}
+     * @return <b>200 OK</b> if there are no errors in the parameters,<br />
+     *         <b>400 Bad request</b> if the parameters are not correct.
+     */
     @GET
     public Response findAllBoardGames(@QueryParam("filter") final List<String> filter,
     								  @QueryParam("order") final List<String> order) {
@@ -119,7 +160,11 @@ public class BoardGamesResource {
         }
     }
 
-    // returns the number of board games
+    /**
+     * Gets the count of existing board games.
+     *
+     * @return the count
+     */
     @GET
     @Path("/count")
     @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -131,6 +176,12 @@ public class BoardGamesResource {
     // =     Single board game requests     =
     // ======================================       
 
+    /**
+     * Gets the board.
+     *
+     * @param id the id
+     * @return the board
+     */
     @Path("/{id}")
     public BoardGameResource getBoard(@PathParam("id") Long id) {
         return new BoardGameResource(uriInfo, request, id);

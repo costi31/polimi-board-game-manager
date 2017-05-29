@@ -3,17 +3,27 @@ package com.herokuapp.polimiboardgamemanager.util;
 import org.apache.commons.validator.routines.UrlValidator;
 
 /**
- * Class with only static methods to check if input strings are valid
- * @author Luca Luciano Costanzo
+ * Class with only static methods to check if input strings are valid.
  *
+ * @author Luca Luciano Costanzo
  */
 public class InputValidator {
 	
+	/** The Constant INVALID_INPUT_MSG. */
 	public static final String INVALID_INPUT_MSG = "The data sent in input has an illegal format!";
+	
+	/** The Constant USERNAME_ALLOWED_CHARACTERS. */
 	public static final String USERNAME_ALLOWED_CHARACTERS = "[A-Za-z0-9]+";
+	
+	/** The Constant PASSWORD_ALLOWED_CHARACTERS. */
 	public static final String PASSWORD_ALLOWED_CHARACTERS = "[\\w\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]+";
+	
+	/** The Constant GENERIC_INPUT_ALLOWED_CHARACTERS. */
 	public static final String GENERIC_INPUT_ALLOWED_CHARACTERS = "[A-Za-z0-9 ;,.'\"-]+";
 	
+	/**
+	 * Instantiates a new input validator.
+	 */
 	private InputValidator() {
 		/*
 		 * Empty and private constructor because this class has only static methods

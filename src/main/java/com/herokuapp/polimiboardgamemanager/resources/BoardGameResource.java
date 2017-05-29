@@ -18,6 +18,9 @@ import com.herokuapp.polimiboardgamemanager.filter.Secured;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 import com.herokuapp.polimiboardgamemanager.util.InputValidator;
 
+/**
+ * The Class BoardGameResource.
+ */
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 public class BoardGameResource {
 	
@@ -25,12 +28,24 @@ public class BoardGameResource {
     // =          Injection Points          =
     // ======================================   
 	
+    /** The uri info. */
     @Context
     UriInfo uriInfo;
+    
+    /** The request. */
     @Context
     Request request;
+    
+    /** The id. */
     private long id;
     
+    /**
+     * Instantiates a new board game resource.
+     *
+     * @param uriInfo the uri info
+     * @param request the request
+     * @param id the id of the board game
+     */
     public BoardGameResource(UriInfo uriInfo, Request request, long id) {
         this.uriInfo = uriInfo;
         this.request = request;
@@ -41,6 +56,11 @@ public class BoardGameResource {
     // =          GET requests              =
     // ======================================
 
+    /**
+     * Gets the board game.
+     *
+     * @return the board game
+     */
     @GET
     public Response getBoardGame() {
         BoardGame board = BoardGameDao.getInstance().findById(id);
@@ -55,6 +75,13 @@ public class BoardGameResource {
     // =          PUT requests              =
     // ======================================    
     
+    /**
+     * Put board game.
+     *
+     * @param board the board
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     */
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Secured
@@ -92,6 +119,12 @@ public class BoardGameResource {
     // =          DELETE requests           =
     // ======================================
     
+    /**
+     * Removes the.
+     *
+     * @param authorizationBearer the authorization bearer
+     * @return the response
+     */
     @DELETE
     @Secured
     public Response remove(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationBearer) {
