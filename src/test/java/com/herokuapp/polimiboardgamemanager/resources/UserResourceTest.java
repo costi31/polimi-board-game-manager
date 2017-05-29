@@ -30,6 +30,9 @@ public class UserResourceTest extends JerseyTest {
     
     private static final String NEW_USERNAME = "cody";
     private static final String NEW_FULLNAME = "Cody Test";
+    
+    private static URI newUserLocation;
+    private static long newUserId;    
 
     @Override
     protected Application configure() {
@@ -45,13 +48,8 @@ public class UserResourceTest extends JerseyTest {
         
         System.out.println(allUsers.get(0).toString());
         
-        for (User user: allUsers) {
-        
-            long id = user.getId();
-            String fullName = user.getFullName();
-            
-            System.out.println("ID: "+id+"; fullName: "+fullName);
-        
+        for (User user: allUsers) {            
+            System.out.println(user);        
         }
 
         assertNotNull(allUsers);
@@ -78,8 +76,10 @@ public class UserResourceTest extends JerseyTest {
         form.param("password", NEW_USERNAME);
         Response response = target(TARGET).request().post(Entity.form(form));
         
-        URI location = response.getLocation();
-        System.out.print(location);
+        newUserLocation = response.getLocation();
+        System.out.print(newUserLocation);
+        String path = newUserLocation.getPath();
+        newUserId = Long.parseLong( path.substring(path.lastIndexOf('/')+1) );
 
         assertEquals(Response.Status.CREATED, Response.Status.fromStatusCode(response.getStatus()));
     }
@@ -113,11 +113,11 @@ public class UserResourceTest extends JerseyTest {
         System.out.println("----------------------------------------------------------------");
         System.out.println("t6_getUser");
         
-        User bob = target(TARGET).path("/114").request().get(User.class);
+        User user = target(newUserLocation.getPath()).request().get(User.class);
         
-        System.out.println(bob);
+        System.out.println(user);
         
-        assertNotNull(bob);
+        assertNotNull(user);
     }
     
     @Test
@@ -127,25 +127,18 @@ public class UserResourceTest extends JerseyTest {
         
         Response loginResponse = login(NEW_USERNAME, NEW_USERNAME);
         String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
-        
-        // To get the id of the new user created before I have to scan the full name of the users
-        List<User> allUsers = getAllUsers();
-        long id = 0;
-        for (User us: allUsers)
-            if (us.getFullName().equals(NEW_FULLNAME))
-                id = us.getId();
-        
-        System.out.println("User to update: "+id);
+                
+        System.out.println("User to update: "+newUserId);
         
         System.out.println("Authorization: "+authorizationBearer);
         
         Form form = new Form();
         form.param("fullName", NEW_FULLNAME+"2");
         
-        Response response = target(TARGET).path("/"+id).request().
+        Response response = target(newUserLocation.getPath()).request().
                 header(HttpHeaders.AUTHORIZATION, authorizationBearer).put(Entity.form(form));
         
-        User updatedUser = target(TARGET).path("/"+id).request().get(User.class);
+        User updatedUser = target(newUserLocation.getPath()).request().get(User.class);
         System.out.println("User updated: ");
         System.out.println(updatedUser);
         
@@ -160,83 +153,16 @@ public class UserResourceTest extends JerseyTest {
         Response loginResponse = login(NEW_USERNAME, NEW_USERNAME);
         String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
         
-        // To get the id of the new user created before I have to scan the full name of the users
-        List<User> allUsers = getAllUsers();
-        long id = 0;
-        for (User us: allUsers)
-            if (us.getFullName().equals(NEW_FULLNAME+"2"))
-                id = us.getId();
-        
-        System.out.println("User to delete: "+id);
+        System.out.println("User to delete: "+newUserId);
         
         System.out.println("Authentication: "+authorizationBearer);
         
-        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
+        Response response = target(newUserLocation.getPath()).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
         
         System.out.println("Response link: "+response.getLink("parent"));
         
         assertEquals(Response.Status.NO_CONTENT, Response.Status.fromStatusCode(response.getStatus()));
-    }
-    
-//    @Test
-//    public void testGetBoardGame4() {
-//        System.out.println("----------------------------------------------------------------");
-//        System.out.println("testGetBoardGame4");
-//        final BoardGame board = target().path("boardgames/4").request().get(BoardGame.class);
-//        
-//        long id = board.getId();
-//        String name = board.getName();
-//        
-//        System.out.println("ID: "+id+"; name: "+name);
-//        
-//        assertEquals(4, id);
-//        assertEquals("boardgame1", name);
-//    }
-    
-//    @Test
-//    public void testGetBoardGame4Json() {
-//        System.out.println("----------------------------------------------------------------");
-//        System.out.println("testGetBoardGame4Json");        
-//        final String boardJson = target().path("boardgames/4").request(MediaType.APPLICATION_JSON).get(String.class);
-//        
-//        System.out.println(boardJson);
-//        
-//        assertEquals(1, 1);
-//    }    
-    
-//    @Test
-//    public void testBoardGameLinks() {
-//        System.out.println("----------------------------------------------------------------");
-//        System.out.println("testGetBoardGameLinks");        
-//        final BoardGame board = target().path("boardgames/4").request().get(BoardGame.class);
-//            
-//        List<Link> links = board.getLinks();
-//
-//        for (Link link: links) {
-//            System.out.printf(
-//                "link relation uri=%s, rel=%s \n",
-//                link.getUri(), link.getRel());
-//            
-//            if (link.getRel().equals("self")) {
-//                assertEquals("https://polimi-board-game-manager.herokuapp.com/boardgames/4",
-//                             link.getUri().toString());
-//            } else if (link.getRel().equals("parent")) {
-//                assertEquals("https://polimi-board-game-manager.herokuapp.com/boardgames/",
-//                             link.getUri().toString());
-//            }
-//        }
-//    }
-    
-//    @Test
-//    public void testBoardGameCount() {
-//        System.out.println("----------------------------------------------------------------");
-//        System.out.println("testBoardGameCount");        
-//        final long count = target("/boardgames").path("count").request().get(Long.class);
-//        
-//        System.out.println("boardgames count: "+String.valueOf(count));
-//            
-//        assertTrue(count >= 0);
-//    }    
+    }  
     
     private Response login(String username, String password) {
         Form form = new Form();
