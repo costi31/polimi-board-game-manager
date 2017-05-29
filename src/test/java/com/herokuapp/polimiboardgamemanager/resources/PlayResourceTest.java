@@ -37,6 +37,9 @@ public class PlayResourceTest extends JerseyTest {
 	private static final Calendar PLAY_DATE = Calendar.getInstance();
 	
     private static final String TARGET = "/users/" + USER_CREATOR_ID + "/plays/";
+    
+    private static URI newPlayLocation;
+    private static long newPlayId;
 
     @Override
     protected Application configure() {
@@ -83,130 +86,77 @@ public class PlayResourceTest extends JerseyTest {
         		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
         		post(Entity.entity(play, MediaType.APPLICATION_JSON_TYPE));
         
-        // The creation should fail because the authenticated user bob is not the creator of the play
-        assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
+        newPlayLocation = response.getLocation();
+        String path = newPlayLocation.getPath();
+        newPlayId = Long.parseLong( path.substring(path.lastIndexOf('/')+1) );
+        
+        // The creation should succeed because the owner of the play is authenticated
+        assertEquals(Response.Status.CREATED, Response.Status.fromStatusCode(response.getStatus()));
     }     
 
 
     @Test
-    public void t3_findAllBoardGames() {
+    public void t3_findAllPlays() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t3_findAllBoardGames");
+        System.out.println("t3_findAllPlays");
         List<Play> allPlays = getAllPlays();
         
         
-        System.out.println(allBoards.get(0).toString());
+        System.out.println(allPlays.get(0).toString());
         
-        for (BoardGame board: allBoards) {
+        for (Play play: allPlays) {
         
-            long id = board.getId();
-            String name = board.getName();
-            
-            System.out.println("ID: "+id+"; name: "+name);
+            System.out.println(play);
         
         }
 
-        assertNotNull(allBoards);
+        assertNotNull(allPlays);
     }
     
     @Test
-    public void t2_getBoardGame4() {
+    public void t4_getPlay() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t2_getBoardGame4");
-        final BoardGame board = target().path("boardgames/4").request().get(BoardGame.class);
-        
-        long id = board.getId();
-        String name = board.getName();
-        
-        System.out.println("ID: "+id+"; name: "+name);
-        
-        assertEquals(4, id);
-        assertEquals("boardgame1", name);
-    }
-      
-    
-    @Test
-    public void t3_getBoardGameLinks() {
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("t3_getBoardGameLinks");        
-        final BoardGame board = target().path("boardgames/4").request().get(BoardGame.class);
-            
-        Collection<Link> links = board.getLinksCollection();
+        System.out.println("t4_getPlay");
 
-        for (Link link: links) {
-            System.out.printf(
-                "link relation uri=%s, rel=%s \n",
-                link.getUri(), link.getRel());
-            
-            if (link.getRel().equals("self")) {
-                assertEquals("https://polimi-board-game-manager.herokuapp.com/boardgames/4",
-                             link.getUri().toString());
-            } else if (link.getRel().equals("parent")) {
-                assertEquals("https://polimi-board-game-manager.herokuapp.com/boardgames/",
-                             link.getUri().toString());
-            }
-        }
+        Play newPlay = target(newPlayLocation.getPath()).request(MediaType.APPLICATION_JSON_TYPE).get(Play.class);
+        
+        System.out.println(newPlay);
+        
+        assertNotNull(newPlay);
     }
     
     @Test
-    public void t4_boardGamesCount() {
+    public void t5_removePlayFail() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t4_boardGamesCount");        
-        final long count = target("/boardgames").path("count").request().get(Long.class);
-        
-        System.out.println("boardgames count: "+String.valueOf(count));
-            
-        assertTrue(count >= 0);
-    }  
-    
-
-    
-    @Test
-    public void t6_removeBoardGameFail() {
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("t6_removeBoardGameFail");        	
+        System.out.println("t5_removePlayFail");        	
     	
         Response loginResponse = login("bob", "bob");
         String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
         
-        // To get the id of the new user created before I have to scan the full name of the users
-        List<BoardGame> allPlays = getAllPlays();
-        long id = 0;
-        for (Play pl: allPlays)
-            if (bg.getName().equals(NEW_NAME))
-                id = bg.getId();
-        
-        System.out.println("Board game to delete: "+id);
+        System.out.println("Play to delete: "+newPlayId);
         
         System.out.println("Authorization: "+authorizationBearer);
         
-        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
+        Response response = target(newPlayLocation.getPath()).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
         
-        // The removal should fail because bob is not a power user
+        // The removal should fail because bob is not the owner
         
         assertEquals(Response.Status.UNAUTHORIZED, Response.Status.fromStatusCode(response.getStatus()));
     }     
     
     @Test
-    public void t7_removeBoardGame() {
+    public void t6_removePlaySuccess() {
         System.out.println("----------------------------------------------------------------");
-        System.out.println("t7_removeBoardGame");        	
+        System.out.println("t6_removePlaySuccess");        	
     	
-        Response loginResponse = login(ADMIN_USERNAME, ADMIN_USERNAME);
+        Response loginResponse = login(USER_CREATOR_USERNAME, USER_CREATOR_USERNAME);
         String authorizationBearer = loginResponse.getHeaderString(HttpHeaders.AUTHORIZATION);
         
-        // To get the id of the new user created before I have to scan the full name of the users
-        List<BoardGame> allBoards = getAllBoards();
-        long id = 0;
-        for (BoardGame bg: allBoards)
-            if (bg.getName().equals(NEW_NAME))
-                id = bg.getId();
-        
-        System.out.println("Board game to delete: "+id);
+        System.out.println("Play to delete: "+newPlayId);
         
         System.out.println("Authorization: "+authorizationBearer);
         
-        Response response = target(TARGET).path("/"+id).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
+        Response response = target(newPlayLocation.getPath()).request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,  authorizationBearer).delete();
         
         System.out.println("Response link: "+response.getLink("parent"));
         
