@@ -23,28 +23,43 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Singleton class to manage entities of JPA
- * @author Luca Luciano Costanzo
+ * Singleton class to manage entities of JPA.
  *
+ * @author Luca Luciano Costanzo
  */
 public class MyEntityManager {
 	
-	/**
-	 * Split character between a search criteria (filter name or order by) and its value
-	 */
+	/** Split character between a search criteria (filter name or order by) and its value. */
 	public static final String SEARCH_CRITERIA_SPLIT = "@";
 	
+    /**
+     * The Enum OrderMode.
+     */
     public enum OrderMode {
-        ASC, DESC
+        
+		/** The asc. */
+		ASC, 
+		/** The desc. */
+		DESC
     }
     
+    /** The instance. */
     private static MyEntityManager instance = null;
     
+    /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(MyEntityManager.class);
     
+    /** The emfactory. */
     private EntityManagerFactory emfactory;
+    
+    /** The em. */
     private EntityManager em;    
 
+    /**
+     * Gets the single instance of MyEntityManager.
+     *
+     * @return single instance of MyEntityManager
+     */
     public static MyEntityManager getInstance() {
         if (instance == null)
             instance = new MyEntityManager();
@@ -52,6 +67,9 @@ public class MyEntityManager {
         return instance;
     }    
     
+    /**
+     * Instantiates a new my entity manager.
+     */
     private MyEntityManager() {
         Map<String, Object> configOverrides = new HashMap<>();
         
@@ -73,7 +91,8 @@ public class MyEntityManager {
     }
     
     /**
-     * Gets JPA EntityManager
+     * Gets JPA EntityManager.
+     *
      * @return the entity manager
      */
     public EntityManager getEm() {
@@ -81,7 +100,8 @@ public class MyEntityManager {
     }
     
     /**
-     * Persists a generic object in the entity manager, commits and flushes
+     * Persists a generic object in the entity manager, commits and flushes.
+     *
      * @param entity Object to persist in the entity manager
      */
     public void persistEntity(Object entity) {
@@ -93,21 +113,46 @@ public class MyEntityManager {
     }
     
     /**
-     * Merges a generic object in the entity manager, commits and flushes
-     * @param entity Object to merge in the entity manager
+     * Merges a generic entity in the entity manager, commits and flushes.
+     *
+     * @param <T> the generic type of the entity
+     * @param entity entity to merge in the entity manager
+     * @return the entity merged
      */    
-    public Object mergeEntity(Object entity) {
+    public <T> T mergeEntity(T entity) {
         em.getTransaction().begin();
-        Object managedEntity = em.merge(entity);
+        T managedEntity = em.merge(entity);
         em.flush();
         em.getTransaction().commit();
         return managedEntity;
     }
     
-    public Object findEntity(Class<?> cls, long id) {
+    /**
+     * Find entity.
+     *
+     * @param <T> the generic type of the entity
+     * @param cls the Class type of the entity
+     * @param id the id of the entity
+     * @return the object representing the entity
+     */
+    public <T> T findEntity(Class<T> cls, long id) {
         return em.find(cls, id);
     }
     
+    /**
+     * Find all entities with specified filters and orders criteria.
+     *
+     * @param <T> the generic type of the entity
+     * @param <E1> the generic type of the enum representing the allowed filters
+     * @param <E2> the generic type of the enum representing the allowed orders
+     * @param resultClass the result class of the entities
+     * @param filtersString the list of filters string
+     * @param ordersString the list of orders string
+     * @param allowedFilters the enum of allowed filters
+     * @param allowedOrders the enum of allowed orders
+     * @return the list of entities
+     * @throws Exception the exception thrown when there are errors with parameters
+     */
     public <T extends Object, E1 extends Enum<E1>, E2 extends Enum<E2>>
     	List<T> findAllEntities(Class<T> resultClass,
 							    List<String> filtersString,
@@ -169,6 +214,12 @@ public class MyEntityManager {
         return q.getResultList();
     }
     
+    /**
+     * Removes the entity.
+     *
+     * @param cls the Class type of the entity to remove
+     * @param id the id of the entity to remove
+     */
     public void removeEntity(Class<?> cls, long id) {
         em.getTransaction().begin();        
         em.remove(em.getReference(cls, id));
@@ -176,6 +227,15 @@ public class MyEntityManager {
         em.getTransaction().commit();
     }
     
+    /**
+     * Map filters.
+     *
+     * @param <E> the type of the enum representing the allowed filters
+     * @param filtersString the list of filters string
+     * @param allowedFilters the list of allowed filters
+     * @return the map of filter_name -> filter_value
+     * @throws Exception the exception when there are errors in filters format or they are not allowed
+     */
     private <E extends Enum<E>> Map<E, String> mapFilters(List<String> filtersString, Class<E> allowedFilters) throws Exception {
         Map<E, String> filtersMap = new HashMap<>();
     	
@@ -188,6 +248,15 @@ public class MyEntityManager {
     	return filtersMap;	
     }
     
+    /**
+     * Map orders.
+     *
+     * @param <E> the type of the enum representing the allowed orders
+     * @param ordersString the list of orders string
+     * @param allowedOrders the list of allowed orders
+     * @return the map of order_by -> order_mode
+     * @throws Exception the exception when there are errors in orders format or they are not allowed
+     */
     private <E extends Enum<E>> Map<E, OrderMode> mapOrders(List<String> ordersString, Class<E> allowedOrders) throws Exception {
         Map<E, OrderMode> ordersMap = new HashMap<>();
     	
