@@ -81,7 +81,7 @@ public class BoardGame implements Identifiable<Long>, Serializable {
     private static final long serialVersionUID = 3879736814114073027L;
 
     /** The Constant BASE_URL. */
-    private static final String BASE_URL = "https://polimi-board-game-manager.herokuapp.com/boardgames/"; 
+    private static final String BASE_URL = CommonConstants.API_URI + "boardgames/"; 
     
     // ======================================
     // =             Attributes             =

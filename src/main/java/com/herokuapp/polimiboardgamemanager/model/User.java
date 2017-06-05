@@ -57,8 +57,8 @@ public class User implements Identifiable<Long>, Serializable {
         
         /** The full name. */
         fullName, 
- /** The id. */
- id
+		/** The id. */
+		id
     }
     
     /**
@@ -68,8 +68,8 @@ public class User implements Identifiable<Long>, Serializable {
     	
 	    /** The full name. */
 	    fullName, 
- /** The power user. */
- powerUser
+	    /** The power user. */
+	    powerUser
     }
 
     /** The Constant COUNT_ALL. */
@@ -85,7 +85,7 @@ public class User implements Identifiable<Long>, Serializable {
     private static final long serialVersionUID = -4504381318096463953L;
     
     /** The Constant BASE_URL. */
-    private static final String BASE_URL = "https://polimi-board-game-manager.herokuapp.com/users/"; 
+    private static final String BASE_URL = CommonConstants.API_URI + "users/"; 
     
     // ======================================
     // =             Attributes             =
