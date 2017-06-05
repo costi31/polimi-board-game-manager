@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Polimi Board Game Manager</title>
+</head>
+<body>
+	<h1>Polimi Board Game Manager</h1>
+    <p>
+        Welcome!<br />
+        This is a RESTful API created for the project of Middleware course of "Politecnico di Milano" in the year 2017.<br />The API is accessible under <a href="/api/">https://polimi-board-game-manager.herokuapp.com/api/</a>.<br />
+        The source code is public and can be found at <a href="https://github.com/costi31/polimi-board-game-manager">https://github.com/costi31/polimi-board-game-manager</a>.
+    </p>
+    <p>
+        The requests relative to users that you can send to <a href="api/users/">https://polimi-board-game-manager.herokuapp.com/api/users/</a>, are:
+        <ul>
+            <li>
+                <p>
+                    <b>POST</b> https://polimi-board-game-manager.herokuapp.com/api/users/login :<br />
+                    to login with "username" and "password" parameters sent in a form. A JSON Web Token is sent as authorization bearer in the response header.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <b>POST</b> https://polimi-board-game-manager.herokuapp.com/api/users/ :<br />
+                    to create a new user with "fullName", "username" and "password" parameters sent in a form.
+                </p>
+            </li>            
+            <li>
+                <p>
+                    <b>GET</b> <a href="api/users/">https://polimi-board-game-manager.herokuapp.com/api/users/</a> :<br />
+                    to find all the users existing in the database, sorted and filtered with the optional criteria, that can be specified by sending multiple query parameters "filter=&lt;<i>filter_name</i>&gt;@&lt;<i>filter_value</i>&gt;" and "order=&lt;<i>order_by_field</i>&gt;@&lt;<i>order_mode</i>&gt;" (where order_mode can be asc for ascendent or desc for descendent).
+                </p>
+            </li>
+            <li>
+                <p>
+                    <b>GET</b> <a href="api/users/count">https://polimi-board-game-manager.herokuapp.com/api/users/count</a> :<br />
+                    to get the count of all the existing users.
+                </p>
+            </li>            
+            <li>
+                <p>
+                    <b>GET</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i> :<br />
+                    to get the information relative to the user with the desired id=<i>user_id</i>.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <b>PUT</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i> :<br />
+                    to update the information relative to the user with the desired id=<i>user_id</i>.<br />
+                    The information are sent as form parameters. If the user is found and is authenticated then he's updated. If the user_id is not found then a new user is created with that id.
+                </p>
+            </li>  
+            <li>
+                <p>
+                    <b>DELETE</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i> :<br />
+                    to delete the user with id=<i>user_id</i>.<br />
+                    <u>The user performing this request must be authenticated.</u>
+                </p>
+            </li> 
+        </ul>
+    </p>
+    <br />
+    <p>
+        The requests relative to board games that you can send to <a href="api/users/">https://polimi-board-game-manager.herokuapp.com/api/boardgames/</a>, are:
+        <ul>
+            <li>
+                <p>
+                    <b>POST</b> https://polimi-board-game-manager.herokuapp.com/api/boardgames/ :<br />
+                    to create a new board games with information sent in a form or as xml or json.
+                </p>
+            </li>            
+            <li>
+                <p>
+                    <b>GET</b> <a href="api/boardgames/">https://polimi-board-game-manager.herokuapp.com/api/boardgames/</a> :<br />
+                    to find all the board games existing in the database, sorted and filtered with the optional criteria, that can be specified by sending multiple query parameters "filter=&lt;<i>filter_name</i>&gt;@&lt;<i>filter_value</i>&gt;" and "order=&lt;<i>order_by_field</i>&gt;@&lt;<i>order_mode</i>&gt;" (where order_mode can be asc for ascendent or desc for descendent).
+                </p>
+            </li>
+            <li>
+                <p>
+                    <b>GET</b> <a href="api/boardgames/count">https://polimi-board-game-manager.herokuapp.com/api/boardgames/count</a> :<br />
+                    to get the count of all the existing board games.
+                </p>
+            </li>            
+            <li>
+                <p>
+                    <b>GET</b> https://polimi-board-game-manager.herokuapp.com/api/boardgames/<i>&lt;boardgame_id&gt;</i> :<br />
+                    to get the information relative to the board game with the desired id=<i>boardgame_id</i>.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <b>PUT</b> https://polimi-board-game-manager.herokuapp.com/api/boardgames/<i>&lt;boardgame_id&gt;</i> :<br />
+                    to update the information relative to the board game with the desired id=<i>boardgame_id</i>.<br />
+                    The information are sent as xml or json. If the board game is found then it's updated. If the boardgame_id is not found then a new board game is created with that id.<br />
+                    <u>The user performing this request must be authenticated and must be a super user.</u>
+                </p>
+            </li>  
+            <li>
+                <p>
+                    <b>DELETE</b> https://polimi-board-game-manager.herokuapp.com/api/boardgames/<i>&lt;boardgame_id&gt;</i> :<br />
+                    to delete the board game with id=<i>boardgame_id</i>.<br />
+                    <u>The user performing this request must be authenticated and must be a super user.</u>
+                </p>
+            </li> 
+        </ul>
+    </p>
+    <br />
+    <p>
+        The requests relative to plays that you can send to https://polimi-board-game-manager.herokuapp.com/api/users/&lt;<i>user_id</i>&gt;/plays/ (for plays relative to user with id=<i>user_id</i>), are:
+        <ul>
+            <li>
+                <p>
+                    <b>POST</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i>/plays/ :<br />
+                    to create a new play relative to user with id=<i>user_id</i> with information sent as xml or json.<br />
+                    <u>The user performing this request must be authenticated and must correspond to the one relative to the play.</u>
+                </p>
+            </li>            
+            <li>
+                <p>
+                    <b>GET</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i>/plays/ :<br />
+                    to find all the plays existing in the database relative to the user with id=<i>user_id</i>, sorted and filtered with the optional criteria, that can be specified by sending multiple query parameters "filter=&lt;<i>filter_name</i>&gt;@&lt;<i>filter_value</i>&gt;" and "order=&lt;<i>order_by_field</i>&gt;@&lt;<i>order_mode</i>&gt;" (where order_mode can be asc for ascendent or desc for descendent).
+                </p>
+            </li>          
+            <li>
+                <p>
+                    <b>GET</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i>/plays/</i>&lt;play_id&gt; :<br />
+                    to get the information relative to the play with the desired id=<i>play_id</i>.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <b>PUT</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i>/plays/</i>&lt;play_id&gt; :<br />
+                    to update the information relative to the play with the desired id=<i>play_id</i>.<br />
+                    The information are sent as xml or json. If the play is found then it's updated. If the play_id is not found then a new play is created with that id.<br />
+                    <u>The user performing this request must be authenticated and must correspond to the one relative to the play.</u>
+                </p>
+            </li>  
+            <li>
+                <p>
+                    <b>DELETE</b> https://polimi-board-game-manager.herokuapp.com/api/users/<i>&lt;user_id&gt;</i>/plays/<i>&lt;play_id&gt;</i> :<br />
+                    to delete the play with id=<i>play_id</i>.<br />
+                    <u>The user performing this request must be authenticated and must correspond to the one relative to the play.</u>
+                </p>
+            </li> 
+        </ul>
+    </p>
+
+</body>
+</html>
