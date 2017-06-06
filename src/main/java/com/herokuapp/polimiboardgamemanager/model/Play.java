@@ -2,6 +2,7 @@ package com.herokuapp.polimiboardgamemanager.model;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -461,11 +462,18 @@ public class Play implements Identifiable<Long>, Serializable {
      */
     @Override
     public String toString() {
+    	SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy - hh:mm a");
+    	SimpleDateFormat timeFormatter = new SimpleDateFormat("H hours and m minutes");  
+
         return "Play{" +
                 "id='" + id + "'" +
                 ", userCreatorId='" + userCreator.getId() + "'" +
                 ", boardGameId='" + boardGame.getId() + "'" +
-                ", date='" + date.toString() + "'" +
-                '}';
+                ", date='" + dateFormatter.format(date.getTime()) + "'" +
+                ", playersInvolved='" + playersInvolved + "'" +
+                ", completed='" + completed + "'" +
+                ", timeToComplete='" + timeFormatter.format(timeToComplete) + "'" +
+                ", userWinnerId='" + userWinner.getId() + "'" +
+                "}";
     }    
 }
