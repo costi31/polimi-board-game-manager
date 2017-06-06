@@ -463,17 +463,20 @@ public class Play implements Identifiable<Long>, Serializable {
     @Override
     public String toString() {
     	SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy - hh:mm a");
-    	SimpleDateFormat timeFormatter = new SimpleDateFormat("H 'hours and' m 'minutes'");  
+    	SimpleDateFormat timeFormatter = new SimpleDateFormat("H 'hours and' m 'minutes'");
+    	
+    	String dateString = date != null ? dateFormatter.format(date.getTime()) : "";
+    	String timeToCompleteString = timeToComplete != null ? timeFormatter.format(timeToComplete) : "";
 
         return "Play{" +
                 "id='" + id + "'" +
                 ", userCreatorId='" + userCreator.getId() + "'" +
                 ", boardGameId='" + boardGame.getId() + "'" +
-                ", date='" + dateFormatter.format(date.getTime()) + "'" +
+                ", date='" + dateString + "'" +
                 ", playersInvolved='" + playersInvolved + "'" +
                 ", completed='" + completed + "'" +
-                ", timeToComplete='" + timeFormatter.format(timeToComplete) + "'" +
-                ", userWinnerId='" + userWinner.getId() + "'" +
+                ", timeToComplete='" + timeToCompleteString + "'" +
+                ", userWinnerId='" + (userWinner != null ? userWinner.getId() : "") + "'" +
                 "}";
     }    
 }
