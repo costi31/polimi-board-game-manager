@@ -463,7 +463,7 @@ public class Play implements Identifiable<Long>, Serializable {
     @Override
     public String toString() {
     	SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy - hh:mm a");
-    	SimpleDateFormat timeFormatter = new SimpleDateFormat("H hours and m minutes");  
+    	SimpleDateFormat timeFormatter = new SimpleDateFormat("H 'hours and' m 'minutes'");  
 
         return "Play{" +
                 "id='" + id + "'" +
