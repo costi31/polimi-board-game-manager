@@ -93,8 +93,9 @@ public class UserResource {
             String token = UserDao.getInstance().issueToken(userId, username, uriInfo);
 
             // Return the token on the response
-            return Response.ok("User authenticated with authorization: Bearer "+token).
-                    header(HttpHeaders.AUTHORIZATION,  "Bearer " + token).build();
+            return Response.ok("User authenticated with authorization: Bearer "+token)
+            		.links(UserDao.getInstance().findById(userId).getLinksArray())
+                    .header(HttpHeaders.AUTHORIZATION,  "Bearer " + token).build();
 
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_XML).entity(e.getMessage()).build();
