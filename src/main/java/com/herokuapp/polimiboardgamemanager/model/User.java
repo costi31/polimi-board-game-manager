@@ -283,6 +283,7 @@ public class User implements Identifiable<Long>, Serializable {
      */
     public Map<String, Link> getLinks() {
         Map<String, Link> links = new HashMap<>();
+        links.put("login", Link.fromUri(BASE_URL+"login").rel("login").build());
         links.put("self", Link.fromUri(BASE_URL+String.valueOf(id)).rel("self").build());
         links.put("parent", Link.fromUri(BASE_URL).rel("parent").build());
         links.put("plays", Link.fromUri(BASE_URL+String.valueOf(id)+"/plays").rel("plays").build());
